@@ -2,7 +2,7 @@ import hashlib
 import uuid
 
 
-def hash_clave(clave: str):
+def hash_clave(clave: str) -> str:
     """
     Obtiene el hash para la clave del usuario.
 
@@ -16,7 +16,7 @@ def hash_clave(clave: str):
     return hash_objeto.hexdigest()
 
 
-def generar_id():
+def generar_id() -> str:
     """
     Genera un identificador único.
 
