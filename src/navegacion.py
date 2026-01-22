@@ -4,8 +4,8 @@ from src.vistas import MENU_PRINCIPAL
 
 def menu_principal():
     cli.print_menu(MENU_PRINCIPAL)
-    opciones = list(range(1, len(MENU_PRINCIPAL["opciones"]) + 1))
-    opcion = cli.input_entero("Ingrese una opción", opciones)
+    max = len(MENU_PRINCIPAL["opciones"])
+    opcion = cli.input_entero("Ingrese una opción", min=1, max=max)
 
     match opcion:
         case 1:
