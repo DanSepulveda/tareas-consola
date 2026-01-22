@@ -1,4 +1,5 @@
 import hashlib
+import uuid
 
 
 def hash_clave(clave: str):
@@ -13,3 +14,13 @@ def hash_clave(clave: str):
     """
     hash_objeto = hashlib.sha256(clave.encode("utf-8"))
     return hash_objeto.hexdigest()
+
+
+def generar_id():
+    """
+    Genera un identificador único.
+
+    Returns:
+        str: Identificador único (id).
+    """
+    return str(uuid.uuid4())
