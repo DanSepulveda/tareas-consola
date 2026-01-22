@@ -24,3 +24,16 @@ def generar_id() -> str:
         str: Identificador único (id).
     """
     return str(uuid.uuid4())
+
+
+def contar_palabras(texto: str) -> int:
+    """
+    Cuenta la cantidad de palabras en un texto ignorando espacios extras.
+
+    Args:
+        texto (str): Texto a evaluar.
+
+    Returns:
+        int: Cantidad de palabras.
+    """
+    return len([p for p in texto.split(" ") if p != ""])
