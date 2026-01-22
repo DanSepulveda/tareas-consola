@@ -88,14 +88,16 @@ def input_texto(mensaje: str, min_len: int = 1, max_len: int = 50) -> str:
         str: Texto ingresado por el usuario.
     """
     if min_len > max_len:
-        raise ValueError(f"min_len ({min}) no puede ser mayor a max_len ({max})")
+        raise ValueError(
+            f"min_len ({min_len}) no puede ser mayor a max_len ({max_len})"
+        )
 
     while True:
         texto = consola.input(f"[input]{mensaje}: [/]")
 
         if len(texto) <= max_len and len(texto) >= min_len:
             return texto
-        print_error(f"El texto debe contener entre {min} y {max} caracteres.")
+        print_error(f"Debe contener entre {min_len} y {max_len} caracteres.")
 
 
 def print_error(mensaje: str) -> None:
