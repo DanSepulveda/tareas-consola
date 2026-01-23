@@ -9,24 +9,18 @@ from typing import Literal, TypedDict
 
 
 class Menu(TypedDict):
-    """Type para los menús de navegación."""
-
     titulo: str
     opciones: list[str]
 
 
 class Usuario(TypedDict):
-    """Type para usuarios almacenados en usuarios.csv"""
-
     id: str
     nombre: str
     nombre_usuario: str
-    clave: str
+    hash: str
 
 
 class Tarea(TypedDict):
-    """Type para tareas registradas en tareas.json"""
-
     id: str
     id_usuario: str
     fecha_creacion: str
@@ -37,7 +31,5 @@ class Tarea(TypedDict):
 
 
 class Estado(TypedDict):
-    """Type para el estado de la App (usuario logueado y sus tareas)"""
-
     usuario: Usuario
     tareas: list[Tarea]
