@@ -4,7 +4,10 @@ from src.vistas import MENU_PRINCIPAL
 
 
 def menu_principal(estado: Estado):
-    cli.print_menu(MENU_PRINCIPAL)
+    cli.print_panel(
+        titulo=MENU_PRINCIPAL["titulo"],
+        contenido="\n\n".join(MENU_PRINCIPAL["opciones"]),
+    )
     max = len(MENU_PRINCIPAL["opciones"])
     opcion = cli.input_entero("Ingrese una opción", min=1, max=max)
 
