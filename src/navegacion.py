@@ -1,8 +1,9 @@
 import src.utilidades.consola as cli
+from src.schemas import Estado
 from src.vistas import MENU_PRINCIPAL
 
 
-def menu_principal():
+def menu_principal(estado: Estado):
     cli.print_menu(MENU_PRINCIPAL)
     max = len(MENU_PRINCIPAL["opciones"])
     opcion = cli.input_entero("Ingrese una opción", min=1, max=max)
@@ -21,4 +22,4 @@ def menu_principal():
             print("Salir")
             return
 
-    menu_principal()
+    menu_principal(estado)

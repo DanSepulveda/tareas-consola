@@ -4,7 +4,7 @@ from typing import Any
 
 import src.utilidades.helpers as utils
 from src.constantes import Rutas
-from src.schemas import Usuario
+from src.schemas import Tarea, Usuario
 
 
 def cargar_csv(ruta: str) -> list:
@@ -84,3 +84,18 @@ def crear_usuario(usuario: Usuario) -> Usuario | None:
         return usuario
     except Exception:
         return None
+
+
+def obtener_tareas_usuario(id_usuario: str) -> list[Tarea]:
+    """
+    Obtiene las tareas de un usuario mediante el id_usuario.
+
+    Args:
+        id_usuario (str): Id del usuario.
+
+    Returns:
+        list[Tarea]: Lista de tareas pertenecientes al usuario.
+    """
+    tareas: list[Tarea] = cargar_json(Rutas.TAREAS) or []
+    tareas_usuario = [t for t in tareas if t["id_usuario"] == id_usuario]
+    return tareas_usuario
