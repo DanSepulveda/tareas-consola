@@ -1,6 +1,5 @@
 import csv
 import json
-from pathlib import Path
 from typing import Any
 
 import src.utilidades.helpers as utils
@@ -23,8 +22,7 @@ def cargar_csv(ruta: str) -> list:
             lector = csv.DictReader(archivo)
             return list(lector)
     except FileNotFoundError:
-        path = Path(ruta).parent
-        path.mkdir(parents=True, exist_ok=True)
+        utils.crear_directorio(ruta)
         return []
 
 
@@ -42,8 +40,7 @@ def cargar_json(ruta: str) -> Any | None:
         with open(ruta, encoding="utf-8") as archivo:
             return json.load(archivo)
     except FileNotFoundError:
-        path = Path(ruta).parent
-        path.mkdir(parents=True, exist_ok=True)
+        utils.crear_directorio(ruta)
         return None
     except json.decoder.JSONDecodeError:
         return None
