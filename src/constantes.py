@@ -1,15 +1,17 @@
+"""
+Configuración de constantes globales del sistema.
+
+Define rutas de archivos y enumeraciones estáticas utilizadas
+para mantener la consistencia en toda la aplicación.
+"""
+
 from enum import StrEnum
 
 
-# Rutas de los distintos archivos (datos), y de las carpetas "reportes" y "logs"
 class Rutas(StrEnum):
+    """Rutas de los archivos (datos), y de las carpetas 'reportes' y 'logs'"""
+
     USUARIOS = "datos/usuarios.json"
     TAREAS = "datos/tareas.xlsx"
     REPORTES = "reportes/"
     LOGS = "logs/"
-
-
-# Mensajes de éxito/error para dar feedback a los usuarios dependiendo de las acciones
-class Mensajes(StrEnum):
-    INVALID_INT = "Opción inválida. Posibles valores:"
-    NO_INT = "Debe ingresar un número entero."
