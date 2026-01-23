@@ -110,6 +110,16 @@ def print_error(mensaje: str) -> None:
     consola.print(f"[error]{mensaje}[/]\n")
 
 
+def print_exito(mensaje: str) -> None:
+    """
+    Muestra un mensaje de éxito en consola.
+
+    Args:
+        mensaje (str): Texto del mensaje de éxito.
+    """
+    consola.print(f"[ok]{mensaje}[/]\n")
+
+
 def print_menu(menu: Menu, ancho=60) -> None:
     """
     Muestra un menú de opciones en consola.
