@@ -12,6 +12,6 @@ class Rutas(StrEnum):
     """Rutas de los archivos (datos), y de las carpetas 'reportes' y 'logs'"""
 
     USUARIOS = "datos/usuarios.csv"
-    TAREAS = "datos/tareas.xlsx"
+    TAREAS = "datos/tareas.json"
     REPORTES = "reportes/"
     LOGS = "logs/"
