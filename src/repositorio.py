@@ -1,3 +1,4 @@
+import csv
 import json
 from pathlib import Path
 from typing import Any
@@ -5,6 +6,26 @@ from typing import Any
 import src.utilidades.helpers as utils
 from src.constantes import Rutas
 from src.schemas import Usuario
+
+
+def cargar_csv(ruta: str) -> list:
+    """
+    Obtiene el contenido de un archivo .csv
+
+    Args:
+        ruta (str): Ruta del archivo que desea leer.
+
+    Returns:
+        list[dict]: Lista de diccionarios con los datos encontrados.
+    """
+    try:
+        with open(ruta, encoding="utf-8") as archivo:
+            lector = csv.DictReader(archivo)
+            return list(lector)
+    except FileNotFoundError:
+        path = Path(ruta).parent
+        path.mkdir(parents=True, exist_ok=True)
+        return []
 
 
 def cargar_json(ruta: str) -> Any | None:
@@ -38,7 +59,7 @@ def buscar_usuario(nombre_usuario: str) -> Usuario | None:
     Returns:
         (Usuario | None): Usuario buscado. None en caso de no existir.
     """
-    usuarios: list[Usuario] = cargar_json(Rutas.USUARIOS) or []
+    usuarios: list[Usuario] = cargar_csv(Rutas.USUARIOS)
     return next((u for u in usuarios if (u["nombre_usuario"] == nombre_usuario)), None)
 
 
@@ -52,14 +73,17 @@ def crear_usuario(usuario: Usuario) -> Usuario | None:
     Returns:
         (Usuario | None): Usuario creado. None en caso de error.
     """
-    usuarios: list[Usuario] = cargar_json(Rutas.USUARIOS) or []
+    usuarios: list[Usuario] = cargar_csv(Rutas.USUARIOS)
 
     usuario.update(id=utils.generar_id(), clave=utils.hash_clave(usuario["clave"]))
     usuarios.append(usuario)
+    encabezados = list(usuarios[0].keys())
 
     try:
         with open(Rutas.USUARIOS, "w", encoding="utf-8") as archivo:
-            json.dump(usuarios, archivo, indent=4, ensure_ascii=False)
+            escritor = csv.DictWriter(archivo, fieldnames=encabezados)
+            escritor.writeheader()
+            escritor.writerows(usuarios)
         return usuario
     except Exception:
         return None

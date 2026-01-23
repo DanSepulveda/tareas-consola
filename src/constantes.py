@@ -11,7 +11,7 @@ from enum import StrEnum
 class Rutas(StrEnum):
     """Rutas de los archivos (datos), y de las carpetas 'reportes' y 'logs'"""
 
-    USUARIOS = "datos/usuarios.json"
+    USUARIOS = "datos/usuarios.csv"
     TAREAS = "datos/tareas.xlsx"
     REPORTES = "reportes/"
     LOGS = "logs/"
