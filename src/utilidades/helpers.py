@@ -7,7 +7,19 @@ como generación de ids, manejo de directorios, etc.
 
 import hashlib
 import uuid
+from datetime import date
 from pathlib import Path
+
+
+def contar_dias_entre(fecha_final: str, fecha_inicial: str) -> int:
+    """Obtiene la cantidad de días entre dos fechas con formato dd-mm-aaaa"""
+    formato = "%d-%m-%Y"
+    try:
+        inicial_formateada = date.strptime(fecha_inicial, formato)
+        final_formateada = date.strptime(fecha_final, formato)
+        return (final_formateada - inicial_formateada).days
+    except ValueError as e:
+        raise ValueError("Fechas con formato inválido.") from e
 
 
 def crear_directorio(ruta: str) -> None:
