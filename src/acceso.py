@@ -4,70 +4,45 @@ import src.utilidades.helpers as utils
 from src.schemas import Usuario
 
 
-def crear_usuario(nombre_usuario: str) -> Usuario | None:
-    """
-    Registrar nuevo usuario en el sistema.
-
-    Args:
-        nombre_usuario (str): Nombre del usuario a crear.
-
-    Returns:
-        (Usuario | None): El usuario creado o None si hubo algún problema.
-    """
+def crear_usuario(nombre_usuario: str) -> Usuario:
+    """Registra un nuevo usuario y lo retorna."""
     nombre = cli.input_texto("Ingrese su nombre", 3)
     clave = cli.input_texto("Ingrese su clave", 5)
-    usuario = repo.crear_usuario(
-        {"id": "", "nombre": nombre, "nombre_usuario": nombre_usuario, "clave": clave}
-    )
-
-    if usuario:
-        return usuario
-
-    cli.print_error("Ha ocurrido un error")
-    return None
+    return repo.crear_usuario(nombre, nombre_usuario, clave)
 
 
 def login():
-    """
-    Autentica a un usuario mediante nombre de usuario y contraseña.
-    En caso de no existir, deriva al proceso de registro.
-
-    Returns:
-        (Usuario | None): Usuario, si el login es correcto. None, en caso contrario.
-    """
+    """Hace login de un usuario. Si no existe, deriva a su creación."""
     nombre_usuario = cli.input_texto("Nombre de usuario", 5, 20)
     usuario_buscado = repo.buscar_usuario(nombre_usuario)
 
-    if usuario_buscado and match_clave(usuario_buscado["clave"]):
+    if usuario_buscado and es_clave_correcta(usuario_buscado["hash"]):
         return usuario_buscado
 
     if not usuario_buscado:
-        confirmacion = cli.input_confirmar("¿Desea crear el usuario?")
-        if not confirmacion:
-            return None
-        usuario = crear_usuario(nombre_usuario)
-        return usuario
+        cli.print_alerta("Usuario no registrado.")
+        confirmacion = cli.input_confirmar("¿Desea crearlo?")
+
+        if confirmacion:
+            return crear_usuario(nombre_usuario)
 
     return None
 
 
-def match_clave(hash: str, intentos: int = 3) -> bool:
-    intentos_restantes = intentos
+def es_clave_correcta(hash: str) -> bool:
+    """Solicta clave al usuario y la compara con el hash almacenado (3 intentos)"""
+    intentos = 3
+    while intentos > 0:
+        clave_ingresada = cli.input_texto("Ingrese su clave", 1, 20)
 
-    while intentos_restantes > 0:
-        clave_ingresada = cli.input_texto("Ingrese su clave", 5)
-
-        if utils.hash_clave(clave_ingresada) == hash:
-            cli.print_exito("¡Acceso concedido!")
+        if utils.generar_hash(clave_ingresada) == hash:
             return True
 
-        intentos_restantes -= 1
-
-        if intentos_restantes > 0:
-            cli.print_error(
-                f"Clave incorrecta. Le queda(n) {intentos_restantes} intento(s)."
-            )
-        else:
-            cli.print_error("Acceso denegado. Ha agotado todos los intentos.")
+        intentos -= 1
+        cli.print_error(
+            f"Clave incorrecta. Queda(n) {intentos} intento(s)."
+            if intentos > 0
+            else "Acceso denegado. No quedan intentos."
+        )
 
     return False
