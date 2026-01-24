@@ -57,10 +57,12 @@ def buscar_usuario(nombre_usuario: str) -> Usuario | None:
         (Usuario | None): Usuario buscado. None en caso de no existir.
     """
     usuarios: list[Usuario] = cargar_csv(Rutas.USUARIOS)
-    return next((u for u in usuarios if (u["nombre_usuario"] == nombre_usuario)), None)
+    return next(
+        (u for u in usuarios if (u["nombre_usuario"] == nombre_usuario)), None
+    )
 
 
-def crear_usuario(usuario: Usuario) -> Usuario | None:
+def crear_usuario(nombre: str, nombre_usuario: str, clave: str) -> Usuario:
     """
     Crea un usuario en la Base de Datos.
 
@@ -71,19 +73,23 @@ def crear_usuario(usuario: Usuario) -> Usuario | None:
         (Usuario | None): Usuario creado. None en caso de error.
     """
     usuarios: list[Usuario] = cargar_csv(Rutas.USUARIOS)
-
-    usuario.update(id=utils.generar_id(), clave=utils.hash_clave(usuario["clave"]))
-    usuarios.append(usuario)
-    encabezados = list(usuarios[0].keys())
+    nuevo_usuario: Usuario = {
+        "id": utils.generar_id(),
+        "nombre": nombre,
+        "nombre_usuario": nombre_usuario,
+        "hash": utils.generar_hash(clave),
+    }
+    usuarios.append(nuevo_usuario)
+    encabezados = list(nuevo_usuario.keys())
 
     try:
         with open(Rutas.USUARIOS, "w", encoding="utf-8") as archivo:
             escritor = csv.DictWriter(archivo, fieldnames=encabezados)
             escritor.writeheader()
             escritor.writerows(usuarios)
-        return usuario
-    except Exception:
-        return None
+        return nuevo_usuario
+    except Exception as e:
+        raise Exception from e
 
 
 def obtener_tareas_usuario(id_usuario: str) -> list[Tarea]:
