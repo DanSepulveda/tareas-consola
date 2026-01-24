@@ -18,7 +18,8 @@ def main():
         return
 
     tareas = repo.obtener_tareas_usuario(usuario_logueado["id"])
-    cli.input_continuar("¡Acceso concedido!")
+    cli.print_exito("¡Acceso concedido!")
+    cli.input_continuar("continuar")
     menu_principal({"usuario": usuario_logueado, "tareas": tareas})
 
 
