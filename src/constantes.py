@@ -1,8 +1,8 @@
 """
 Configuración de constantes globales del sistema.
 
-Define enumeraciones estáticas utilizadas para mantener la
-consistencia en toda la aplicación (rutas, configuraciones, etc).
+Define enumeraciones estáticas utilizadas para mantener la consistencia
+en toda la aplicación (rutas, configuraciones, etc).
 """
 
 from enum import StrEnum
