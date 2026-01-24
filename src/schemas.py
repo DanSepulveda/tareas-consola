@@ -1,8 +1,8 @@
 """
 Definición de estructuras de datos y tipos (Schemas).
 
-Este módulo define la forma de los objetos de datos para
-asegurar la consistencia y facilitar el autocompletado.
+Este módulo define la forma de los objetos de datos para asegurar la
+consistencia y facilitar el autocompletado.
 """
 
 from typing import Literal, TypedDict

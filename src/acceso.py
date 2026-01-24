@@ -1,3 +1,11 @@
+"""
+Módulo de Gestión de Accesos y Seguridad.
+
+Este módulo se encarga de la autenticación de usuarios y el registro de
+nuevas cuentas en el sistema. Interactúa con la capa de datos para
+validar credenciales.
+"""
+
 import src.repositorio as repo
 import src.utilidades.consola as cli
 import src.utilidades.helpers as utils
@@ -30,7 +38,7 @@ def login():
 
 
 def es_clave_correcta(hash: str) -> bool:
-    """Solicta clave al usuario y la compara con el hash almacenado (3 intentos)"""
+    """Solicita clave al usuario y la compara con el hash almacenado (3 intentos)"""
     intentos = 3
     while intentos > 0:
         clave_ingresada = cli.input_texto("Ingrese su clave", 1, 20)
