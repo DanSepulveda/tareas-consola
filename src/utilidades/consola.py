@@ -1,9 +1,15 @@
+"""
+Interfaz de interacción por consola (CLI).
+
+Centralización de todas las funciones de entrada y salida de datos.
+Proporciona métodos para mostrar alertas, errores y solicitar datos validados,
+asegurando una UI consistente en toda la aplicación.
+"""
+
 from rich.console import Console
 from rich.padding import Padding
 from rich.panel import Panel
 from rich.theme import Theme
-
-from src.schemas import Menu
 
 
 tema = Theme(
@@ -20,42 +26,28 @@ consola = Console(theme=tema)
 
 
 def input_confirmar(mensaje: str) -> bool:
-    """
-    Solicita una confirmación al usuario (opción booleana s/n).
-
-    Args:
-        mensaje (str): Texto a mostrar en consola.
-
-    Returns:
-        bool: True en caso de confirmar. False en caso contrario
-    """
+    """Solicita y valida una respuesta booleana (s/n)."""
     while True:
-        respuesta = consola.input(f"[alerta]{mensaje} (s/n): [/]").lower()
+        respuesta = consola.input(f"[input]{mensaje} (s/n):[/] ").lower()
 
         if respuesta in ["s", "n"]:
             return respuesta == "s"
         print_error("Opción inválida. Ingrese 's' o 'n'")
 
 
+def input_continuar(mensaje: str) -> None:
+    """Simula una pausa. Usuario debe presionar ENTER para continuar."""
+    consola.input(f"[ok]{mensaje} Presione [bold]ENTER[/bold] para continuar...[/ok]")
+
+
 def input_entero(mensaje: str, min: int | None = None, max: int | None = None) -> int:
-    """
-    Solicita y comprueba que lo ingresado por el usuario sea un número entero.
-    Si se señala "min" y/o "max", se verifica que cumpla con esas condiciones.
-
-    Args:
-        mensaje (str): Texto a mostrar en consola.
-        min (int, opcional): Valor mínimo (incluído)
-        max (int, opcional): Valor máximo (incluído)
-
-    Returns:
-        int: Número ingresado por el usuario.
-    """
+    """Solicita y valida un número entero (opcionalmente se puede especificar min y max)"""
     if min is not None and max is not None and min > max:
         raise ValueError(f"min ({min}) no puede ser mayor a max ({max})")
 
     while True:
         try:
-            numero = int(consola.input(f"[input]{mensaje}: [/]"))
+            numero = int(consola.input(f"[input]{mensaje}:[/] "))
 
             if min is not None and max is not None and (numero < min or numero > max):
                 raise ValueError(f"El número debe estar entre {min} y {max}.")
@@ -77,67 +69,44 @@ def input_entero(mensaje: str, min: int | None = None, max: int | None = None) -
 
 
 def input_texto(mensaje: str, min_len: int = 1, max_len: int = 50) -> str:
-    """
-    Solicita texto al usuario y verifica que su longitud esté en el rango indicado.
-
-    Args:
-        min_len (int, opcional): Cantidad mínima de caracteres.
-        max_len (int, opcional): Cantidad máxima de caracteres.
-
-    Returns:
-        str: Texto ingresado por el usuario.
-    """
+    """Solicita texto y valida que su longitud esté en el rango indicado."""
     if min_len > max_len:
         raise ValueError(
             f"min_len ({min_len}) no puede ser mayor a max_len ({max_len})"
         )
 
     while True:
-        texto = consola.input(f"[input]{mensaje}: [/]")
+        texto = consola.input(f"[input]{mensaje}:[/] ")
 
         if len(texto) <= max_len and len(texto) >= min_len:
             return texto
         print_error(f"Debe contener entre {min_len} y {max_len} caracteres.")
 
 
-def print_error(mensaje: str) -> None:
-    """
-    Muestra un mensaje de error en consola.
+def print_alerta(mensaje: str) -> None:
+    consola.print(f"[alerta]{mensaje}[/]\n")
 
-    Args:
-        mensaje (str): Texto del mensaje de error.
-    """
+
+def print_error(mensaje: str) -> None:
     consola.print(f"[error]{mensaje}[/]\n")
 
 
 def print_exito(mensaje: str) -> None:
-    """
-    Muestra un mensaje de éxito en consola.
-
-    Args:
-        mensaje (str): Texto del mensaje de éxito.
-    """
     consola.print(f"[ok]{mensaje}[/]\n")
 
 
-def print_menu(menu: Menu, ancho=60) -> None:
-    """
-    Muestra un menú de opciones en consola.
-
-    Args:
-        menu (Menu): Menú de navegación.
-        ancho (int, opcional): Ancho del menú en consola.
-    """
-    titulo, opciones = menu["titulo"], menu["opciones"]
-    contenido = "\n"
-
-    for opcion in opciones:
-        contenido += f"{opcion}\n\n"
-
-    panel = Panel(
-        Padding(contenido[:-1], (0, 0, 0, 3)),
-        title=f"[bold cyan]{titulo}[/bold cyan]",
-        border_style="cyan",
-        width=ancho,
+def print_panel(
+    titulo: str, contenido: str, subtitulo: str = "", limpiar: bool = True
+) -> None:
+    """Imprime un Panel en consola (Contenedor con bordes)"""
+    consola.print(
+        "\n" * 60 if limpiar else "",
+        Panel(
+            Padding(f"[bold bright_white]{contenido}[/]", (1, 4)),
+            title=f"[bold blue_violet]{titulo}[/]",
+            border_style="light_steel_blue",
+            subtitle=subtitulo,
+            width=60,
+        ),
+        "",
     )
-    consola.print(panel)
