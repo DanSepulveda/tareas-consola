@@ -6,9 +6,11 @@ Proporciona métodos para mostrar alertas, errores y solicitar datos validados,
 asegurando una UI consistente en toda la aplicación.
 """
 
+from rich import box
 from rich.console import Console
 from rich.padding import Padding
 from rich.panel import Panel
+from rich.table import Table
 from rich.theme import Theme
 
 
@@ -37,10 +39,14 @@ def input_confirmar(mensaje: str) -> bool:
 
 def input_continuar(mensaje: str) -> None:
     """Simula una pausa. Usuario debe presionar ENTER para continuar."""
-    consola.input(f"[ok]{mensaje} Presione [bold]ENTER[/bold] para continuar...[/ok]")
+    consola.input(
+        f"[plum1]Presione [bold]ENTER[/bold] para {mensaje}...[/plum1] "
+    )
 
 
-def input_entero(mensaje: str, min: int | None = None, max: int | None = None) -> int:
+def input_entero(
+    mensaje: str, min: int | None = None, max: int | None = None
+) -> int:
     """Solicita y valida un número entero (opcionalmente se puede especificar min y max)"""
     if min is not None and max is not None and min > max:
         raise ValueError(f"min ({min}) no puede ser mayor a max ({max})")
@@ -49,14 +55,22 @@ def input_entero(mensaje: str, min: int | None = None, max: int | None = None) -
         try:
             numero = int(consola.input(f"[input]{mensaje}:[/] "))
 
-            if min is not None and max is not None and (numero < min or numero > max):
+            if (
+                min is not None
+                and max is not None
+                and (numero < min or numero > max)
+            ):
                 raise ValueError(f"El número debe estar entre {min} y {max}.")
 
             if min is not None and numero < min:
-                raise ValueError(f"El número debe ser mayor o igual que {min}.")
+                raise ValueError(
+                    f"El número debe ser mayor o igual que {min}."
+                )
 
             if max is not None and numero > max:
-                raise ValueError(f"El número debe ser menor o igual que {max}.")
+                raise ValueError(
+                    f"El número debe ser menor o igual que {max}."
+                )
 
             return numero
         except ValueError as e:
@@ -110,3 +124,25 @@ def print_panel(
         ),
         "",
     )
+
+
+def print_table(
+    titulo: str, columnas: list[str], filas: list[list[str]]
+) -> None:
+    """Imprime una tabla en consola."""
+    tabla = Table(
+        title=titulo,
+        box=box.HORIZONTALS,
+        show_lines=True,
+        border_style="dim",
+        title_style="bold blue_violet",
+        header_style="bright_white bold",
+    )
+
+    for columna in columnas:
+        tabla.add_column(columna)
+
+    for fila in filas:
+        tabla.add_row(*fila)
+
+    consola.print(tabla)
