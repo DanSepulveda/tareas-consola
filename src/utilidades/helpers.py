@@ -11,15 +11,13 @@ from datetime import date
 from pathlib import Path
 
 
-def contar_dias_entre(fecha_final: str, fecha_inicial: str) -> int:
-    """Obtiene la cantidad de días entre dos fechas con formato dd-mm-aaaa"""
-    formato = "%d-%m-%Y"
+def dias_desde_hoy(fecha: str) -> int:
+    """Cantidad de días entre la fecha indicada en formato dd-mm-aaaa y hoy."""
     try:
-        inicial_formateada = date.strptime(fecha_inicial, formato)
-        final_formateada = date.strptime(fecha_final, formato)
-        return (final_formateada - inicial_formateada).days
+        fecha_formateada = date.strptime(fecha, "%d-%m-%Y")
+        return (fecha_formateada - date.today()).days
     except ValueError as e:
-        raise ValueError("Fechas con formato inválido.") from e
+        raise ValueError("Fecha con formato inválido.") from e
 
 
 def crear_directorio(ruta: str) -> None:
