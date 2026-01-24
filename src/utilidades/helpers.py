@@ -7,8 +7,25 @@ como generación de ids, manejo de directorios, etc.
 
 import hashlib
 import uuid
+import webbrowser
 from datetime import date
 from pathlib import Path
+
+
+def abrir_navegador(ruta: str):
+    try:
+        path = Path(ruta).resolve().as_uri()
+        exito = webbrowser.open(path)
+        if not exito:
+            raise Exception("Error al abrir el navegador")
+    except Exception:
+        pass
+
+
+def crear_directorio(ruta: str) -> None:
+    """Crea las carpetas de la ruta indicada."""
+    path = Path(ruta).parent
+    path.mkdir(parents=True, exist_ok=True)
 
 
 def dias_desde_hoy(fecha: str) -> int:
@@ -18,12 +35,6 @@ def dias_desde_hoy(fecha: str) -> int:
         return (fecha_formateada - date.today()).days
     except ValueError as e:
         raise ValueError("Fecha con formato inválido.") from e
-
-
-def crear_directorio(ruta: str) -> None:
-    """Crea las carpetas de la ruta indicada."""
-    path = Path(ruta).parent
-    path.mkdir(parents=True, exist_ok=True)
 
 
 def generar_hash(clave: str) -> str:
