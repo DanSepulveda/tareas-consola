@@ -22,12 +22,6 @@ def abrir_navegador(ruta: str):
         pass
 
 
-def crear_directorio(ruta: str) -> None:
-    """Crea las carpetas de la ruta indicada."""
-    path = Path(ruta).parent
-    path.mkdir(parents=True, exist_ok=True)
-
-
 def dias_desde_hoy(fecha: str) -> int:
     """Cantidad de días entre la fecha indicada en formato dd-mm-aaaa y hoy."""
     try:
