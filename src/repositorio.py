@@ -7,7 +7,6 @@ el filtrado y el registro de la información de la aplicación.
 """
 
 import src.utilidades.archivos as gestor
-import src.utilidades.helpers as utils
 from src.constantes import Rutas
 from src.schemas import Tarea, Usuario
 
@@ -20,24 +19,20 @@ def buscar_usuario(nombre_usuario: str) -> Usuario | None:
     )
 
 
-def crear_usuario(nombre: str, nombre_usuario: str, clave: str) -> Usuario:
+def crear_usuario(usuario: Usuario) -> bool:
     """Crea un usuario en el sistema de almacenamiento."""
-    usuarios: list[Usuario] = gestor.leer_csv(Rutas.USUARIOS)
-    nuevo_usuario: Usuario = {
-        "id": utils.generar_id(),
-        "nombre": nombre,
-        "nombre_usuario": nombre_usuario,
-        "hash": utils.generar_hash(clave),
-    }
-    usuarios.append(nuevo_usuario)
-    encabezados = list(nuevo_usuario.keys())
-
-    gestor.guardar_csv(Rutas.USUARIOS, encabezados, usuarios)
-    return nuevo_usuario
+    try:
+        usuarios: list[Usuario] = gestor.leer_csv(Rutas.USUARIOS)
+        usuarios.append(usuario)
+        encabezados = list(usuario.keys())
+        gestor.guardar_csv(Rutas.USUARIOS, encabezados, usuarios)
+        return True
+    except Exception:
+        return False
 
 
 def crear_tarea(tarea: Tarea) -> bool:
-    """Crea una nueva tarea en el sistema de almacenamiento."""
+    """Crea una tarea en el sistema de almacenamiento."""
     try:
         tareas: list[Tarea] = gestor.leer_json(Rutas.TAREAS) or []
         tareas.append(tarea)
