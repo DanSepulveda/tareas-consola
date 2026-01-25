@@ -44,6 +44,20 @@ def crear_usuario(nombre: str, nombre_usuario: str, clave: str) -> Usuario:
     return nuevo_usuario
 
 
+def crear_tarea(tarea: Tarea) -> bool:
+    """
+    Agrega una tarea a la base de datos. Retorna una respuesta
+    booleana dependiendo del éxito de la operación
+    """
+    try:
+        tareas: list[Tarea] = gestor.cargar_json(Rutas.TAREAS) or []
+        tareas.append(tarea)
+        gestor.guardar_json(Rutas.TAREAS, tareas)
+        return True
+    except Exception:
+        return False
+
+
 def obtener_tareas_usuario(id_usuario: str) -> list[Tarea]:
     """
     Obtiene las tareas de un usuario mediante el id_usuario.

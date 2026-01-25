@@ -1,6 +1,7 @@
+import src.servicios as servicios
 import src.utilidades.consola as cli
 import src.utilidades.helpers as utils
-from src.schemas import Estado, Menu, Tarea
+from src.schemas import Campo, Estado, Form, Menu, Tarea, Usuario
 
 
 def menu_principal(estado: Estado):
@@ -20,8 +21,7 @@ def menu_principal(estado: Estado):
 
     match opcion:
         case 1:
-            print("Agregar tarea")
-            pass
+            formulario_agregar(estado["tareas"], estado["usuario"])
         case 2:
             listar_tareas(estado["tareas"])
         case 3:
@@ -32,6 +32,46 @@ def menu_principal(estado: Estado):
             return
 
     menu_principal(estado)
+
+
+def formulario_agregar(tareas: list[Tarea], usuario: Usuario):
+    formulario: Form = {
+        "titulo": "📌 Agregar tarea 📌",
+        "campos": [
+            {
+                "label": "Título",
+                "placeholder": "[dim not bold]Ej: Terminar proyecto 1[/]",
+                "nombre": "titulo",
+                "input": cli.input_texto,
+            },
+            {
+                "label": "Categoría(s)",
+                "placeholder": "[dim not bold]Ej: Urgente, Desarrollo, Proyecto.[/]",
+                "nombre": "categoria",
+                "input": cli.input_texto,
+            },
+            {
+                "label": "Fecha límite",
+                "placeholder": "[dim not bold]Ej: 24-02-2026[/]",
+                "nombre": "fecha_vencimiento",
+                "input": cli.input_texto,
+            },
+        ],
+    }
+
+    titulo, campos = formulario["titulo"], formulario["campos"]
+    cli.print_panel(titulo=titulo, contenido=formatear_contenido(campos))
+
+    for indice, campo in enumerate(campos):
+        valor = campo["input"](f"Ingrese {campo['label']}")
+        campos[indice]["valor"] = valor
+        cli.print_panel(titulo=titulo, contenido=formatear_contenido(campos))
+
+    nueva_tarea = {c["nombre"]: c.get("valor") for c in campos}
+    servicios.crear_tarea(tareas, nueva_tarea, usuario)
+
+    cli.print_exito("Tarea agregada correctamente")
+    cli.input_continuar("volver al menú principal")
 
 
 def listar_tareas(tareas: list[Tarea]):
@@ -124,3 +164,14 @@ def estilar_vigencia(fecha: str | None, estado: str) -> str:
 
 def ver_en_navegador(tareas: list[Tarea]):
     pass
+
+
+def formatear_contenido(campos: list[Campo]) -> str:
+    return "\n\n".join(
+        [
+            f"👉 {c['label']}: [dim not bold]{c['placeholder']}[/]"
+            if c.get("valor") is None
+            else f"👉 {c['label']}: [green not bold]{c.get('valor')}[/]"
+            for c in campos
+        ]
+    )

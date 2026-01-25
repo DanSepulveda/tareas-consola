@@ -5,12 +5,26 @@ Este módulo define la forma de los objetos de datos para asegurar la
 consistencia y facilitar el autocompletado.
 """
 
-from typing import Literal, TypedDict
+from collections.abc import Callable
+from typing import Literal, NotRequired, TypedDict
 
 
 class Menu(TypedDict):
     titulo: str
     opciones: list[str]
+
+
+class Campo(TypedDict):
+    label: str
+    placeholder: str
+    nombre: str
+    valor: NotRequired[str]
+    input: Callable
+
+
+class Form(TypedDict):
+    titulo: str
+    campos: list[Campo]
 
 
 class Usuario(TypedDict):
