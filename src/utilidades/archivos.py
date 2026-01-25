@@ -1,68 +1,60 @@
+"""
+Módulo de utilidades para el Sistema de Archivos.
+
+Centraliza todas las operaciones de manejo de archivos y directorios,
+tales como lectura y escritura de CSV y JSON, creación de directorios, y
+la copia de archivos de un directorio a otro.
+"""
+
 import csv
 import json
 from pathlib import Path
 from typing import Any
 
 
-def cargar_csv(ruta: str) -> list:
-    """
-    Obtiene el contenido de un archivo .csv
+def crear_directorio(ruta: str) -> None:
+    """Crea las carpetas (en caso de no existir) de la ruta indicada."""
+    path = Path(ruta).parent
+    if not path.exists():
+        path.mkdir(parents=True, exist_ok=True)
 
-    Args:
-        ruta (str): Ruta del archivo que desea leer.
 
-    Returns:
-        list[dict]: Lista de diccionarios con los datos encontrados.
-    """
+def leer_csv(ruta: str) -> list:
+    """Lee y retorna el contenido de un archivo .csv"""
     try:
         with open(ruta, encoding="utf-8") as archivo:
             lector = csv.DictReader(archivo)
             return list(lector)
     except FileNotFoundError:
-        crear_directorio(ruta)
         return []
 
 
-def cargar_json(ruta: str) -> Any | None:
-    """
-    Obtiene el contenido de un archivo .json
-
-    Args:
-        ruta (str): Ruta del archivo que desea leer.
-
-    Returns:
-        (Any | None): Los datos en el formato encontrado o None si no hay datos.
-    """
+def guardar_csv(ruta: str, encabezados: list[str], datos: list):
+    """Crea o sobrescribe un archivo .csv en la ruta indicada."""
     try:
-        with open(ruta, encoding="utf-8") as archivo:
-            return json.load(archivo)
-    except FileNotFoundError:
         crear_directorio(ruta)
-        return None
-    except json.decoder.JSONDecodeError:
-        return None
-
-
-def guardar_json(ruta: str, datos: Any):
-    try:
-        with open(ruta, "w", encoding="utf-8") as archivo:
-            json.dump(datos, archivo, indent=4, ensure_ascii=False)
-    except Exception:
-        pass
-
-
-def crear_directorio(ruta: str) -> None:
-    """Crea las carpetas de la ruta indicada."""
-    path = Path(ruta).parent
-    path.mkdir(parents=True, exist_ok=True)
-
-
-def generar_archivo_json(ruta: str, encabezados: list[str], datos: list):
-    "Crea o sobreescribe un archivo .json en la ruta indicada."
-    try:
         with open(ruta, "w", encoding="utf-8") as archivo:
             escritor = csv.DictWriter(archivo, fieldnames=encabezados)
             escritor.writeheader()
             escritor.writerows(datos)
     except Exception as e:
-        raise Exception from e
+        raise Exception("Error al guardar CSV.") from e
+
+
+def leer_json(ruta: str) -> Any | None:
+    """Lee y retorna el contenido de un archivo .json"""
+    try:
+        with open(ruta, encoding="utf-8") as archivo:
+            return json.load(archivo)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return None
+
+
+def guardar_json(ruta: str, datos: Any):
+    """Crea o sobrescribe un archivo .json en la ruta indicada."""
+    try:
+        crear_directorio(ruta)
+        with open(ruta, "w", encoding="utf-8") as archivo:
+            json.dump(datos, archivo, indent=4, ensure_ascii=False)
+    except Exception as e:
+        raise Exception("Error al guardar JSON.") from e
