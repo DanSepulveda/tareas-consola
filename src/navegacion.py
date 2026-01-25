@@ -1,11 +1,20 @@
 import src.utilidades.consola as cli
 import src.utilidades.helpers as utils
-from src.schemas import Estado, Tarea
-from src.vistas import MENU_LISTADO, MENU_PRINCIPAL
+from src.schemas import Estado, Menu, Tarea
 
 
 def menu_principal(estado: Estado):
-    titulo, opciones = MENU_PRINCIPAL["titulo"], MENU_PRINCIPAL["opciones"]
+    menu: Menu = {
+        "titulo": "🔸 GESTIÓN DE TAREAS 🔸",
+        "opciones": [
+            "📌 1. Agregar tarea",
+            "📋 2. Listar tareas",
+            "📊 3. Generar reporte",
+            "🚪 4. Cerrar sesión",
+        ],
+    }
+
+    titulo, opciones = menu["titulo"], menu["opciones"]
     cli.print_panel(titulo=titulo, contenido="\n\n".join(opciones))
     opcion = cli.input_entero("Ingrese una opción", min=1, max=len(opciones))
 
@@ -34,7 +43,16 @@ def listar_tareas(tareas: list[Tarea]):
         cli.input_continuar("volver al menú")
         return
 
-    titulo, opciones = MENU_LISTADO["titulo"], MENU_LISTADO["opciones"]
+    menu: Menu = {
+        "titulo": "📋 Listar Tareas 📋",
+        "opciones": [
+            "🟢 1. Ver en consola",
+            "🟢 2. Ver en navegador",
+            "🟠 3. Volver al menú principal",
+        ],
+    }
+
+    titulo, opciones = menu["titulo"], menu["opciones"]
     cli.print_panel(titulo=titulo, contenido="\n\n".join(opciones))
     opcion = cli.input_entero("Ingrese una opción", min=1, max=len(opciones))
 
