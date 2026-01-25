@@ -43,6 +43,14 @@ def cargar_json(ruta: str) -> Any | None:
         return None
 
 
+def guardar_json(ruta: str, datos: Any):
+    try:
+        with open(ruta, "w", encoding="utf-8") as archivo:
+            json.dump(datos, archivo, indent=4, ensure_ascii=False)
+    except Exception:
+        pass
+
+
 def crear_directorio(ruta: str) -> None:
     """Crea las carpetas de la ruta indicada."""
     path = Path(ruta).parent
