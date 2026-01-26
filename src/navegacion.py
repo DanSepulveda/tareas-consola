@@ -1,7 +1,7 @@
 import src.lib.consola as cli
 import src.servicios as servicios
 import src.utils as utils
-from src.schemas import Campo, Estado, Form, Menu, Tarea
+from src.schemas import Estado, Form, Menu, Tarea
 
 
 def menu_principal(estado: Estado):
@@ -15,9 +15,7 @@ def menu_principal(estado: Estado):
         ],
     }
 
-    titulo, opciones = menu["titulo"], menu["opciones"]
-    cli.print_panel(titulo=titulo, contenido="\n\n".join(opciones))
-    opcion = cli.input_entero("Ingrese una opción", min=1, max=len(opciones))
+    opcion = utils.opcion_desde_menu(menu)
 
     match opcion:
         case 1:
@@ -64,12 +62,12 @@ def formulario_agregar(estado: Estado):
     }
 
     titulo, campos = formulario["titulo"], formulario["campos"]
-    cli.print_panel(titulo=titulo, contenido=formatear_contenido(campos))
+    cli.print_panel(titulo=titulo, contenido=utils.formatear_form(campos))
 
     for indice, campo in enumerate(campos):
         valor = campo["input"](f"Ingrese {campo['label']}")
         campos[indice]["valor"] = valor
-        cli.print_panel(titulo=titulo, contenido=formatear_contenido(campos))
+        cli.print_panel(titulo=titulo, contenido=utils.formatear_form(campos))
 
     nueva_tarea = {c["nombre"]: c.get("valor") for c in campos}
     servicios.crear_tarea(tareas, nueva_tarea, usuario)
@@ -96,86 +94,16 @@ def menu_listar(tareas: list[Tarea]):
         ],
     }
 
-    titulo, opciones = menu["titulo"], menu["opciones"]
-    cli.print_panel(titulo=titulo, contenido="\n\n".join(opciones))
-    opcion = cli.input_entero("Ingrese una opción", min=1, max=len(opciones))
+    opcion = utils.opcion_desde_menu(menu)
 
     match opcion:
         case 1:
-            ver_en_consola(tareas)
+            columnas, filas = utils.generar_tabla_tareas(tareas)
+            cli.print_table("Lista de tareas", columnas, filas)
+            cli.input_continuar("volver al menú")
         case 2:
-            ver_en_navegador(tareas)
+            print("Ver en navegador")
         case 3:
             return
 
     menu_listar(tareas)
-
-
-def ver_en_consola(tareas: list[Tarea]):
-    columnas = [
-        "ID",
-        "Título",
-        "Categoría",
-        "Fecha creación",
-        "Fecha límite",
-        "Vigencia",
-        "Estado",
-    ]
-    filas = [
-        [
-            str(indice),
-            t["titulo"],
-            t["categoria"],
-            t["fecha_creacion"],
-            t["fecha_vencimiento"],
-            estilar_vigencia(t["fecha_vencimiento"], t["estado"]),
-            estilar_estado(t["estado"]),
-        ]
-        for indice, t in enumerate(tareas, 1)
-    ]
-
-    cli.print_table("Lista de tareas", columnas, filas)
-    cli.input_continuar("volver al menú")
-
-
-def estilar_estado(estado: str):
-    if estado == "Finalizada":
-        color = "green"
-    elif estado == "En proceso":
-        color = "blue"
-    else:
-        color = "yellow"
-    return f"[{color}]{estado}[/]"
-
-
-def estilar_vigencia(fecha: str | None, estado: str) -> str:
-    if fecha is None:
-        return ""
-
-    if estado == "Finalizada":
-        return estado
-
-    dias = utils.dias_desde_hoy(fecha)
-
-    if dias < 0:
-        return f"[red]Atrasada {abs(dias)} día(s)[/]"
-    if dias == 0:
-        return "[yellow]Vence hoy[/]"
-    if dias < 4:
-        return f"[blue]Vence pronto - {dias} día(s)[/]"
-    return "[green]Dentro de plazo[/]"
-
-
-def ver_en_navegador(tareas: list[Tarea]):
-    pass
-
-
-def formatear_contenido(campos: list[Campo]) -> str:
-    return "\n\n".join(
-        [
-            f"👉 {c['label']}: [dim not bold]{c['placeholder']}[/]"
-            if c.get("valor") is None
-            else f"👉 {c['label']}: [green not bold]{c.get('valor')}[/]"
-            for c in campos
-        ]
-    )
