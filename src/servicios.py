@@ -1,9 +1,10 @@
 from datetime import date
 
+import src.lib.archivos as gestor
 import src.lib.consola as cli
 import src.repositorio as repo
 import src.utils as utils
-from src.schemas import Tarea, Usuario
+from src.schemas import Extension, Tarea, Usuario
 
 
 def login():
@@ -86,3 +87,27 @@ def eliminar_finalizadas(tareas: list[Tarea], usuario: Usuario) -> str:
     for i in indices_finalizadas:
         tareas.pop(i)
     return f"Se han eliminado {len(indices_finalizadas)} tarea(s)"
+
+
+def exportar_tareas(
+    tareas: list[Tarea],
+    usuario: Usuario,
+    extensiones: tuple[Extension, ...],
+    carpeta: str,
+):
+    if not len(tareas):
+        pass
+
+    if ".text" in extensiones:
+        pass
+
+    if ".csv" in extensiones:
+        print("llego aca")
+        encabezados = list(tareas[0].keys())
+        gestor.guardar_csv("exportado/datos.csv", encabezados, tareas)
+
+    if ".json" in extensiones:
+        gestor.guardar_json("exportado/datos.json", tareas)
+
+    if ".html" in extensiones:
+        pass

@@ -1,7 +1,7 @@
 import src.lib.consola as cli
 import src.servicios as servicios
 import src.utils as utils
-from src.schemas import EstadoGlobal, Form, Menu
+from src.schemas import EstadoGlobal, Extension, Form, Menu
 
 
 def menu_principal(estado: EstadoGlobal):
@@ -127,4 +127,15 @@ def menu_modificar(estado: EstadoGlobal):
 
 
 def exportar_datos(estado: EstadoGlobal):
-    pass
+    tareas, usuario = estado["tareas"], estado["usuario"]
+    extensiones: tuple[Extension, ...] = (".txt", ".csv", ".json", ".html")
+
+    extensiones_incluidas: tuple[Extension, ...] = tuple(
+        opcion
+        for opcion in extensiones
+        if cli.input_confirmar(f"¿Desea incluir {opcion}")
+    )
+
+    carpeta = cli.input_texto("Nombre de la carpeta de destino")
+    servicios.exportar_tareas(tareas, usuario, extensiones_incluidas, carpeta)
+    cli.input_continuar("lala")

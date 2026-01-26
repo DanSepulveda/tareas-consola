@@ -50,3 +50,6 @@ class Tarea(TypedDict):
 class EstadoGlobal(TypedDict):
     usuario: Usuario
     tareas: list[Tarea]
+
+
+Extension = Literal[".txt", ".csv", ".json", ".html"]

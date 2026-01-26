@@ -12,7 +12,7 @@ from datetime import date
 from pathlib import Path
 
 import src.lib.consola as cli
-from src.schemas import Campo, Menu, Tarea
+from src.schemas import Campo, EstadoTarea, Menu, Tarea
 
 
 def abrir_navegador(ruta: str):
@@ -34,7 +34,7 @@ def dias_desde_hoy(fecha: str) -> int:
         raise ValueError("Fecha con formato inválido.") from e
 
 
-def estilar_estado_tarea(estado: str):
+def estilar_estado_tarea(estado: EstadoTarea):
     colors = {
         "Finalizada": "green",
         "En proceso": "blue",
@@ -44,12 +44,12 @@ def estilar_estado_tarea(estado: str):
     return f"[{colors.get(estado)}]{estado}[/]"
 
 
-def estilar_vigencia_tarea(fecha: str | None, estado_tarea: str) -> str:
+def estilar_vigencia_tarea(fecha: str | None, estado: EstadoTarea) -> str:
     if fecha is None:
         return ""
 
-    if estado_tarea == "Finalizada":
-        return estado_tarea
+    if estado == "Finalizada":
+        return estado
 
     dias = dias_desde_hoy(fecha)
 
