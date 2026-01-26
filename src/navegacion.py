@@ -1,10 +1,10 @@
 import src.lib.consola as cli
 import src.servicios as servicios
 import src.utils as utils
-from src.schemas import Estado, Form, Menu, Tarea
+from src.schemas import EstadoGlobal, Form, Menu, Tarea
 
 
-def menu_principal(estado: Estado):
+def menu_principal(estado: EstadoGlobal):
     menu: Menu = {
         "titulo": "🔸 GESTIÓN DE TAREAS 🔸",
         "opciones": [
@@ -34,7 +34,7 @@ def menu_principal(estado: Estado):
 
 # TODO: agregar regex para validar fecha y otros inputs
 # TODO: revisar color de placeholder o label, para que no se confundan
-def formulario_agregar(estado: Estado):
+def formulario_agregar(estado: EstadoGlobal):
     tareas, usuario = estado["tareas"], estado["usuario"]
 
     formulario: Form = {

@@ -34,6 +34,9 @@ class Usuario(TypedDict):
     hash: str
 
 
+EstadoTarea = Literal["Pendiente", "En proceso", "Finalizada"]
+
+
 class Tarea(TypedDict):
     id: str
     id_usuario: str
@@ -41,9 +44,9 @@ class Tarea(TypedDict):
     fecha_vencimiento: str | None
     titulo: str
     categoria: str
-    estado: Literal["Pendiente", "En proceso", "Finalizada"]
+    estado: EstadoTarea
 
 
-class Estado(TypedDict):
+class EstadoGlobal(TypedDict):
     usuario: Usuario
     tareas: list[Tarea]
