@@ -1,7 +1,7 @@
 import src.lib.consola as cli
 import src.servicios as servicios
 import src.utils as utils
-from src.schemas import EstadoGlobal, Form, Menu, Tarea
+from src.schemas import EstadoGlobal, Form, Menu
 
 
 def menu_principal(estado: EstadoGlobal):
@@ -14,17 +14,15 @@ def menu_principal(estado: EstadoGlobal):
             "🚪 4. Cerrar sesión",
         ],
     }
-
     opcion = utils.opcion_desde_menu(menu)
 
     match opcion:
         case 1:
             formulario_agregar(estado)
         case 2:
-            menu_listar(estado["tareas"])
+            listar_tareas(estado)
         case 3:
-            print("Generar reporte")
-            pass
+            exportar_datos(estado)
         case 4:
             cli.print_alerta("Ha cerrado la sesión.")
             return
@@ -36,7 +34,6 @@ def menu_principal(estado: EstadoGlobal):
 # TODO: revisar color de placeholder o label, para que no se confundan
 def formulario_agregar(estado: EstadoGlobal):
     tareas, usuario = estado["tareas"], estado["usuario"]
-
     formulario: Form = {
         "titulo": "📌 AGREGAR TAREA 📌",
         "campos": [
@@ -76,7 +73,10 @@ def formulario_agregar(estado: EstadoGlobal):
     cli.input_continuar("volver al menú principal")
 
 
-def menu_listar(tareas: list[Tarea]):
+def listar_tareas(estado: EstadoGlobal):
+    tareas = estado["tareas"]
+
+    # 1) Si no hay tareas, se muestra un mensaje
     if not tareas:
         cli.print_panel(
             titulo="MIS TAREAS",
@@ -85,25 +85,46 @@ def menu_listar(tareas: list[Tarea]):
         cli.input_continuar("volver al menú principal")
         return
 
+    # 2) Si hay tareas, se muestran las tareas en formato tabla
+    columnas, filas = utils.generar_tabla_tareas(tareas)
+    cli.print_table(f"Lista de tareas ({len(tareas)})", columnas, filas)
+
+    # 3) Si el usuario no desea hacer modificaciones, se vuelve al menú
+    modificar = cli.input_confirmar("¿Desea realizar una modificación?")
+    if not modificar:
+        return
+
+    # 4) Si desea modificar, se muestra el menú para modificar
+    menu_modificar(estado)
+
+    # 5) Al terminar la modificación se vuelve a mostrar el listado
+    listar_tareas(estado)
+
+
+def menu_modificar(estado: EstadoGlobal):
+    tareas, usuario = estado["tareas"], estado["usuario"]
+
     menu: Menu = {
-        "titulo": "📋 LISTAR TAREAS 📋",
+        "titulo": "📝 MODIFICAR TAREAS 📝",
         "opciones": [
-            "🟢 1. Ver en consola",
-            "🟢 2. Ver en navegador",
-            "🟠 3. Volver al menú principal",
+            "🟢 1. Cambiar estado de tarea",
+            "🟢 2. Eliminar tareas finalizadas",
+            "🟠 3. Cancelar",
         ],
     }
-
     opcion = utils.opcion_desde_menu(menu)
 
+    # 5) Finalmente se ejecuta la opción elegida
     match opcion:
         case 1:
-            columnas, filas = utils.generar_tabla_tareas(tareas)
-            cli.print_table("Lista de tareas", columnas, filas)
-            cli.input_continuar("volver al menú")
+            pass
         case 2:
-            print("Ver en navegador")
+            respuesta = servicios.eliminar_finalizadas(tareas, usuario)
+            cli.print_panel("Resultado", respuesta)
+            cli.input_continuar("continuar")
         case 3:
             return
 
-    menu_listar(tareas)
+
+def exportar_datos(estado: EstadoGlobal):
+    pass

@@ -47,10 +47,8 @@ def crear_tarea(tareas: list[Tarea], nueva_tarea, usuario: Usuario):
             "estado": "Pendiente",
         }
     )
-    exito = repo.crear_tarea(nueva_tarea)
-    if exito:
-        tareas.append(nueva_tarea)
-    return exito
+    repo.crear_tarea(nueva_tarea)
+    tareas.append(nueva_tarea)
 
 
 def es_clave_correcta(hash: str) -> bool:
@@ -70,3 +68,21 @@ def es_clave_correcta(hash: str) -> bool:
         )
 
     return False
+
+
+def eliminar_finalizadas(tareas: list[Tarea], usuario: Usuario) -> str:
+    indices_finalizadas = sorted(
+        [
+            indice
+            for indice, tarea in enumerate(tareas)
+            if tarea["estado"] == "Finalizada"
+        ],
+        reverse=True,
+    )
+    if not len(indices_finalizadas):
+        return "No hay tareas con estado 'Finalizada'"
+
+    repo.eliminar_tareas_finalizadas(usuario["id"])
+    for i in indices_finalizadas:
+        tareas.pop(i)
+    return f"Se han eliminado {len(indices_finalizadas)} tarea(s)"
