@@ -6,7 +6,7 @@ comunicación con el sistema de almacenamiento. Centraliza las consultas,
 el filtrado y el registro de la información de la aplicación.
 """
 
-import src.utilidades.archivos as gestor
+import src.lib.archivos as gestor
 from src.constantes import Rutas
 from src.schemas import Tarea, Usuario
 

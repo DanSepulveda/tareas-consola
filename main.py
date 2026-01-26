@@ -1,5 +1,5 @@
+import src.lib.consola as cli
 import src.repositorio as repo
-import src.utilidades.consola as cli
 from src.constantes import Config
 from src.navegacion import menu_principal
 from src.servicios import login
