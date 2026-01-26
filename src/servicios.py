@@ -1,8 +1,8 @@
 from datetime import date
 
 import src.lib.consola as cli
-import src.lib.helpers as utils
 import src.repositorio as repo
+import src.utils as utils
 from src.schemas import Tarea, Usuario
 
 
