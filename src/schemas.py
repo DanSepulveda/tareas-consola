@@ -9,6 +9,11 @@ from collections.abc import Callable
 from typing import Literal, NotRequired, TypedDict
 
 
+EstadoTarea = Literal["Pendiente", "En proceso", "Finalizada"]
+
+Extension = Literal[".txt", ".csv", ".json", ".html"]
+
+
 class Menu(TypedDict):
     titulo: str
     opciones: list[str]
@@ -20,6 +25,7 @@ class Campo(TypedDict):
     nombre: str
     valor: NotRequired[str]
     input: Callable
+    regex: NotRequired[str]
 
 
 class Form(TypedDict):
@@ -32,9 +38,6 @@ class Usuario(TypedDict):
     nombre: str
     nombre_usuario: str
     hash: str
-
-
-EstadoTarea = Literal["Pendiente", "En proceso", "Finalizada"]
 
 
 class Tarea(TypedDict):
@@ -50,6 +53,3 @@ class Tarea(TypedDict):
 class EstadoGlobal(TypedDict):
     usuario: Usuario
     tareas: list[Tarea]
-
-
-Extension = Literal[".txt", ".csv", ".json", ".html"]
