@@ -6,7 +6,7 @@ from src.schemas import EstadoGlobal, Extension, Form, Menu
 
 def menu_principal(estado: EstadoGlobal):
     menu: Menu = {
-        "titulo": "🔸 GESTIÓN DE TAREAS 🔸",
+        "titulo": "🔸 MENÚ PRINCIPAL 🔸",
         "opciones": [
             "📌 1. Agregar tarea",
             "📋 2. Listar tareas",
@@ -14,7 +14,7 @@ def menu_principal(estado: EstadoGlobal):
             "🚪 4. Cerrar sesión",
         ],
     }
-    opcion = utils.opcion_desde_menu(menu)
+    opcion = utils.obtener_opcion_menu(menu)
 
     match opcion:
         case 1:
@@ -30,8 +30,6 @@ def menu_principal(estado: EstadoGlobal):
     menu_principal(estado)
 
 
-# TODO: agregar regex para validar fecha y otros inputs
-# TODO: revisar color de placeholder o label, para que no se confundan
 def formulario_agregar(estado: EstadoGlobal):
     tareas, usuario = estado["tareas"], estado["usuario"]
     formulario: Form = {
@@ -45,7 +43,7 @@ def formulario_agregar(estado: EstadoGlobal):
             },
             {
                 "label": "Categoría(s)",
-                "placeholder": "Ej. Urgente, Desarrollo, Proyecto.",
+                "placeholder": "Ej. Desarrollo, Testing, etc.",
                 "nombre": "categoria",
                 "input": cli.input_texto,
             },
@@ -54,6 +52,7 @@ def formulario_agregar(estado: EstadoGlobal):
                 "placeholder": "Ej. 24-02-2026 o vacío",
                 "nombre": "fecha_vencimiento",
                 "input": cli.input_texto,
+                "regex": r"^([0-2][0-9]|3[0-1]|[1-9])(-)(0[1-9]|1[0-2]|[1-9])\2(\d{4})$",
             },
         ],
     }
@@ -62,7 +61,8 @@ def formulario_agregar(estado: EstadoGlobal):
     cli.print_panel(titulo=titulo, contenido=utils.formatear_form(campos))
 
     for indice, campo in enumerate(campos):
-        valor = campo["input"](f"Ingrese {campo['label']}")
+        label, regex = campo["label"], campo.get("regex", None)
+        valor = campo["input"](f"Ingrese {label}", regex=regex)
         campos[indice]["valor"] = valor
         cli.print_panel(titulo=titulo, contenido=utils.formatear_form(campos))
 
@@ -76,66 +76,127 @@ def formulario_agregar(estado: EstadoGlobal):
 def listar_tareas(estado: EstadoGlobal):
     tareas = estado["tareas"]
 
-    # 1) Si no hay tareas, se muestra un mensaje
+    # 1) SI NO HAY TAREAS -> se muestra mensaje y regresa al menú
     if not tareas:
-        cli.print_panel(
-            titulo="MIS TAREAS",
-            contenido="👻 No hay tareas registradas 👻".center(48),
-        )
+        cli.print_panel("INFORMACIÓN", "No hay tareas registradas")
         cli.input_continuar("volver al menú principal")
         return
 
-    # 2) Si hay tareas, se muestran las tareas en formato tabla
-    columnas, filas = utils.generar_tabla_tareas(tareas)
-    cli.print_table(f"Lista de tareas ({len(tareas)})", columnas, filas)
+    # 2) SI HAY TAREAS -> se muestran en una tabla
+    columnas, filas = utils.generar_datos_tabla(tareas)
+    cli.print_tabla("LISTA DE TAREAS", columnas, filas)
 
-    # 3) Si el usuario no desea hacer modificaciones, se vuelve al menú
+    # 3) SI NO DESEA HACER MODIFICACIONES -> se vuelve al menú
     modificar = cli.input_confirmar("¿Desea realizar una modificación?")
     if not modificar:
         return
 
-    # 4) Si desea modificar, se muestra el menú para modificar
+    # 4) SI DESEA HACER MODIFICACIONES -> se muestra el menú para modificar
     menu_modificar(estado)
 
-    # 5) Al terminar la modificación se vuelve a mostrar el listado
+    # 5) AL TERMINAR DE MODIFICAR -> se vuelve a mostrar el listado
     listar_tareas(estado)
 
 
 def menu_modificar(estado: EstadoGlobal):
-    tareas, usuario = estado["tareas"], estado["usuario"]
-
     menu: Menu = {
         "titulo": "📝 MODIFICAR TAREAS 📝",
         "opciones": [
-            "🟢 1. Cambiar estado de tarea",
-            "🟢 2. Eliminar tareas finalizadas",
-            "🟠 3. Cancelar",
+            "🔸 1. Cambiar estado de tarea",
+            "🔸 2. Eliminar tareas finalizadas",
+            "🔸 3. Cancelar",
         ],
     }
-    opcion = utils.opcion_desde_menu(menu)
+    opcion = utils.obtener_opcion_menu(menu)
 
-    # 5) Finalmente se ejecuta la opción elegida
     match opcion:
         case 1:
-            pass
+            cambiar_estado(estado)
         case 2:
-            respuesta = servicios.eliminar_finalizadas(tareas, usuario)
-            cli.print_panel("Resultado", respuesta)
-            cli.input_continuar("continuar")
+            eliminar_finalizadas(estado)
         case 3:
             return
 
 
-def exportar_datos(estado: EstadoGlobal):
-    tareas, usuario = estado["tareas"], estado["usuario"]
-    extensiones: tuple[Extension, ...] = (".txt", ".csv", ".json", ".html")
+def cambiar_estado(estado: EstadoGlobal):
+    tareas = estado["tareas"]
 
-    extensiones_incluidas: tuple[Extension, ...] = tuple(
-        opcion
-        for opcion in extensiones
-        if cli.input_confirmar(f"¿Desea incluir {opcion}")
+    # 1) LISTAR TAREAS
+    columnas, filas = utils.generar_datos_tabla(tareas)
+    cli.print_tabla("LISTA DE TAREAS", columnas, filas)
+
+    # 2) SE SOLICITA EL PSEUDO ID (ÍNDICE) DE LA TAREA Y EL NUEVO ESTADO
+    texto_id = "ID de la tarea a modificar"
+    texto_estado = "N° del nuevo estado 1=Pendiente 2=En proceso 3=Finalizada"
+    indice_tarea = cli.input_entero(texto_id, min=1, max=len(tareas)) - 1
+    nuevo_estado = cli.input_entero(texto_estado, min=1, max=3)
+
+    # 3) MEDIANTE EL ÍNDICE SE OBTIENE LA TAREA (LA CUAL CONTIENE EL ID REAL)
+    tarea = tareas[indice_tarea]
+
+    # 4) SE EJECUTA EL SERVICIO Y SE MUESTRA EL RESULTADO
+    respuesta = servicios.cambiar_estado_tarea(tareas, tarea, nuevo_estado)
+    cli.print_panel("INFORMACIÓN", respuesta)
+    cli.input_continuar("volver al listado")
+
+
+def eliminar_finalizadas(estado: EstadoGlobal):
+    tareas, usuario = estado["tareas"], estado["usuario"]
+
+    # 1) SI NO HAY TAREAS FINALIZADAS -> se muetra mensaje y regresa al menú
+    hay_finalizadas = any(t["estado"] == "Finalizada" for t in tareas)
+    if not hay_finalizadas:
+        cli.print_panel("INFORMACIÓN", "No hay tareas finalizadas")
+        cli.input_continuar("volver al listado")
+        return
+
+    # 2) SI HAY TAREAS FINALIZADAS -> se listan, destacando las que serán eliminadas
+    columnas, filas = utils.generar_datos_tabla(tareas, True)
+    cli.print_tabla(
+        titulo="LISTA DE TAREAS",
+        columnas=columnas,
+        filas=filas,
+        caption="[black on red bold]Tareas a eliminar[/]",
     )
 
+    # 3) SI NO CONFIRMA LA ELIMINACIÓN -> se cancela la operación
+    confirmacion = cli.input_confirmar("¿Confirma eliminación?")
+    if not confirmacion:
+        cli.print_panel("INFORMACIÓN", "Operación cancelada")
+        cli.input_continuar("volver al listado")
+        return
+
+    # 4) SI CONFIRMA LA ELIMINACIÓN -> se muestra el resultado
+    respuesta = servicios.eliminar_finalizadas(tareas, usuario)
+    cli.print_panel("INFORMACIÓN", respuesta)
+    cli.input_continuar("volver al listado")
+
+
+def exportar_datos(estado: EstadoGlobal):
+    tareas, usuario = estado["tareas"], estado["usuario"]
+
+    # 1) SI NO HAY TAREAS -> se muestra mensaje y regresa al menú
+    if not tareas:
+        cli.print_panel("INFORMACIÓN", "No hay datos para exportar")
+        cli.input_continuar("volver al menú principal")
+        return
+
+    # 2) SI HAY TAREAS -> solicitar tipo de archivos a exportar
+    cli.print_panel("EXPORTAR DATOS", "Indique los formatos que necesita.")
+
+    extensiones: tuple[Extension, ...] = (".txt", ".csv", ".json", ".html")
+    extensiones_incluidas: tuple[Extension, ...] = tuple(
+        opcion
+        for indice, opcion in enumerate(extensiones, 1)
+        if cli.input_confirmar(
+            f"({indice}/{len(extensiones)}) ¿Desea incluir [green]{opcion}[/green]?"
+        )
+    )
     carpeta = cli.input_texto("Nombre de la carpeta de destino")
-    servicios.exportar_tareas(tareas, usuario, extensiones_incluidas, carpeta)
-    cli.input_continuar("lala")
+
+    # 3) EJECUTAR EL SERVICIO Y MOSTRAR RESPUESTA
+    respuesta = servicios.exportar_tareas(
+        tareas, usuario, extensiones_incluidas, carpeta
+    )
+    cli.print_panel("INFORMACIÓN", respuesta)
+    cli.input_continuar("volver al menú principal")
