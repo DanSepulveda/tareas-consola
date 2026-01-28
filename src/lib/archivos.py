@@ -1,5 +1,5 @@
 """
-Módulo de utilidades para el Sistema de Archivos.
+Módulo para la Administración de Archivos.
 
 Centraliza todas las operaciones de manejo de archivos y directorios,
 tales como lectura y escritura de CSV y JSON, creación de directorios, y
@@ -8,18 +8,9 @@ la copia de archivos de un directorio a otro.
 
 import csv
 import json
+import shutil
 from pathlib import Path
 from typing import Any
-
-
-def copiar_archivo(ruta_archivo: str, ruta_destino: str):
-    """Copia un archivo a la ruta de destino indicada."""
-    path_archivo = Path(ruta_archivo)
-
-    path_destino = Path(ruta_destino)
-    crear_directorio(ruta_destino)
-
-    path_archivo.copy_into(path_destino)
 
 
 def crear_directorio(ruta: str) -> None:
@@ -28,6 +19,17 @@ def crear_directorio(ruta: str) -> None:
     path = path.parent if path.suffix else path
     if not path.exists():
         path.mkdir(parents=True, exist_ok=True)
+
+
+def copiar_archivo(ruta_archivo: str, ruta_destino: str):
+    """Copia un archivo a la ruta de destino indicada."""
+    try:
+        path_archivo = Path(ruta_archivo)
+        path_destino = Path(ruta_destino)
+        crear_directorio(ruta_destino)
+        shutil.copy(path_archivo, path_destino)
+    except Exception as e:
+        raise Exception("Error al copiar archivo.") from e
 
 
 def leer_csv(ruta: str) -> list:
