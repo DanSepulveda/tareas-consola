@@ -11,8 +11,7 @@ from enum import StrEnum
 class Rutas(StrEnum):
     USUARIOS = "datos/usuarios.csv"
     TAREAS = "datos/tareas.json"
-    REPORTES = "reportes/"
-    LOGS = "logs/"
+    EXPORTACIONES = "exportaciones/"
 
 
 class Config(StrEnum):
