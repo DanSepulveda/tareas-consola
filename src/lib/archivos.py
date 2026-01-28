@@ -12,9 +12,20 @@ from pathlib import Path
 from typing import Any
 
 
+def copiar_archivo(ruta_archivo: str, ruta_destino: str):
+    """Copia un archivo a la ruta de destino indicada."""
+    path_archivo = Path(ruta_archivo)
+
+    path_destino = Path(ruta_destino)
+    crear_directorio(ruta_destino)
+
+    path_archivo.copy_into(path_destino)
+
+
 def crear_directorio(ruta: str) -> None:
     """Crea las carpetas (en caso de no existir) de la ruta indicada."""
-    path = Path(ruta).parent
+    path = Path(ruta)
+    path = path.parent if path.suffix else path
     if not path.exists():
         path.mkdir(parents=True, exist_ok=True)
 
@@ -58,3 +69,13 @@ def guardar_json(ruta: str, datos: Any):
             json.dump(datos, archivo, indent=4, ensure_ascii=False)
     except Exception as e:
         raise Exception("Error al guardar JSON.") from e
+
+
+def guardar_texto_plano(ruta: str, contenido: str):
+    """Crea o sobrescribe un archivo de texto (.txt, .js) en la ruta indicada."""
+    try:
+        crear_directorio(ruta)
+        with open(ruta, "w", encoding="utf-8") as archivo:
+            archivo.write(contenido)
+    except Exception as e:
+        raise Exception("Error al guardar archivo.") from e
