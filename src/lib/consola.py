@@ -6,7 +6,6 @@ Proporciona métodos para mostrar alertas, errores y solicitar datos validados,
 asegurando una UI consistente en toda la aplicación.
 """
 
-import re
 from datetime import date
 
 from rich import box
@@ -106,12 +105,7 @@ def input_fecha(mensaje: str, permitir_vacio: bool = True):
             print_error(error)
 
 
-def input_texto(
-    mensaje: str,
-    min_len: int = 1,
-    max_len: int = 50,
-    regex: re.Pattern[str] | None = None,
-) -> str:
+def input_texto(mensaje: str, min_len: int = 1, max_len: int = 50) -> str:
     """Solicita texto y valida que su longitud esté en el rango indicado."""
     if min_len > max_len:
         raise ValueError(
@@ -120,12 +114,6 @@ def input_texto(
 
     while True:
         texto = consola.input(f"[input]{mensaje}:[/] ")
-
-        if regex is not None:
-            if re.compile(regex).match(texto) or min_len == 0:
-                return texto
-            print_error("Formato inválido.")
-            continue
 
         if len(texto) <= max_len and len(texto) >= min_len:
             return texto
