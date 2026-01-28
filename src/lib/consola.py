@@ -6,12 +6,19 @@ Proporciona métodos para mostrar alertas, errores y solicitar datos validados,
 asegurando una UI consistente en toda la aplicación.
 """
 
+import re
+from datetime import date
+
 from rich import box
 from rich.console import Console
 from rich.padding import Padding
 from rich.panel import Panel
 from rich.table import Table
 from rich.theme import Theme
+
+
+ANCHO = 60
+PADDING = 4
 
 
 tema = Theme(
@@ -82,7 +89,29 @@ def input_entero(
             print_error(error)
 
 
-def input_texto(mensaje: str, min_len: int = 1, max_len: int = 50) -> str:
+def input_fecha(mensaje: str, permitir_vacio: bool = True):
+    while True:
+        fecha = consola.input(f"[input]{mensaje}:[/] ")
+        if fecha == "" and permitir_vacio:
+            return "-"
+
+        try:
+            date.strptime(fecha, "%d-%m-%Y")
+            return fecha
+        except ValueError as e:
+            error = "Formato de fecha inválido"
+            if "must be in range" in str(e):
+                dias = str(e).split("..")[1][:2]
+                error = f"Fecha inválida. El mes ingresado tiene {dias} días"
+            print_error(error)
+
+
+def input_texto(
+    mensaje: str,
+    min_len: int = 1,
+    max_len: int = 50,
+    regex: re.Pattern[str] | None = None,
+) -> str:
     """Solicita texto y valida que su longitud esté en el rango indicado."""
     if min_len > max_len:
         raise ValueError(
@@ -91,6 +120,12 @@ def input_texto(mensaje: str, min_len: int = 1, max_len: int = 50) -> str:
 
     while True:
         texto = consola.input(f"[input]{mensaje}:[/] ")
+
+        if regex is not None:
+            if re.compile(regex).match(texto) or min_len == 0:
+                return texto
+            print_error("Formato inválido.")
+            continue
 
         if len(texto) <= max_len and len(texto) >= min_len:
             return texto
@@ -110,24 +145,32 @@ def print_exito(mensaje: str) -> None:
 
 
 def print_panel(
-    titulo: str, contenido: str, subtitulo: str = "", limpiar: bool = True
+    titulo: str,
+    contenido: str,
+    subtitulo: str = "",
+    centrar: bool = True,
+    limpiar: bool = True,
 ) -> None:
     """Imprime un Panel en consola (Contenedor con bordes)"""
+    contenido = contenido.center(ANCHO - PADDING * 3) if centrar else contenido
     consola.print(
         "\n" * 60 if limpiar else "",
         Panel(
-            Padding(f"[bold bright_white]{contenido}[/]", (1, 4)),
+            Padding(f"[bold bright_white]{contenido}[/]", (1, PADDING)),
             title=f"[bold blue_violet]{titulo}[/]",
             border_style="light_steel_blue",
             subtitle=subtitulo,
-            width=60,
+            width=ANCHO,
         ),
         "",
     )
 
 
-def print_table(
-    titulo: str, columnas: list[str], filas: list[list[str]]
+def print_tabla(
+    titulo: str,
+    columnas: list[str],
+    filas: list[list[str]],
+    caption: str | None = None,
 ) -> None:
     """Imprime una tabla en consola."""
     tabla = Table(
@@ -137,6 +180,7 @@ def print_table(
         border_style="dim",
         title_style="bold blue_violet",
         header_style="bright_white bold",
+        caption=caption,
     )
 
     for columna in columnas:
@@ -145,4 +189,4 @@ def print_table(
     for fila in filas:
         tabla.add_row(*fila)
 
-    consola.print(tabla)
+    consola.print("\n" * 60, tabla, "")

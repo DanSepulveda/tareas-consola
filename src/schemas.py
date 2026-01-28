@@ -25,7 +25,6 @@ class Campo(TypedDict):
     nombre: str
     valor: NotRequired[str]
     input: Callable
-    regex: NotRequired[str]
 
 
 class Form(TypedDict):

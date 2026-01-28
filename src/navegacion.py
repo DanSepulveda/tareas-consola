@@ -40,32 +40,38 @@ def formulario_agregar(estado: EstadoGlobal):
                 "placeholder": "Ej. Terminar proyecto 1",
                 "nombre": "titulo",
                 "input": cli.input_texto,
+                # "valor": "comienza nulo y se llena con lo ingresado en el input"
             },
             {
                 "label": "Categoría(s)",
                 "placeholder": "Ej. Desarrollo, Testing, etc.",
                 "nombre": "categoria",
                 "input": cli.input_texto,
+                # "valor": "comienza nulo y se llena con lo ingresado en el input"
             },
             {
                 "label": "Fecha límite",
                 "placeholder": "Ej. 24-02-2026 o vacío",
                 "nombre": "fecha_vencimiento",
-                "input": cli.input_texto,
-                "regex": r"^([0-2][0-9]|3[0-1]|[1-9])(-)(0[1-9]|1[0-2]|[1-9])\2(\d{4})$",
+                "input": cli.input_fecha,
+                # "valor": "comienza nulo y se llena con lo ingresado en el input"
             },
         ],
     }
 
+    # 1) Se muestra el "formulario" inicialmente mostrando los valores del placeholder
     titulo, campos = formulario["titulo"], formulario["campos"]
     cli.print_panel(titulo=titulo, contenido=utils.formatear_form(campos))
 
+    # 2) A medida que se solicitan los datos, se agrega al formulario los valores
+    # ingresados, y se muestran en reemplazo del placeholder
     for indice, campo in enumerate(campos):
-        label, regex = campo["label"], campo.get("regex", None)
-        valor = campo["input"](f"Ingrese {label}", regex=regex)
-        campos[indice]["valor"] = valor
+        solicitar_dato, label = campo["input"], campo["label"]
+        valor_ingresado = solicitar_dato(f"Ingrese {label}")
+        campos[indice]["valor"] = valor_ingresado
         cli.print_panel(titulo=titulo, contenido=utils.formatear_form(campos))
 
+    # 3) Se arma la tarea iterando cada campo y extrayendo su "nombre" y "valor"
     nueva_tarea = {c["nombre"]: c.get("valor") for c in campos}
     servicios.crear_tarea(tareas, nueva_tarea, usuario)
 

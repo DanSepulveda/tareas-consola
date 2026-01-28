@@ -40,15 +40,19 @@ def crear_usuario(nombre_usuario: str):
     return nuevo_usuario
 
 
-def crear_tarea(tareas: list[Tarea], nueva_tarea, usuario: Usuario):
-    nueva_tarea.update(
-        {
-            "id": utils.generar_id(),
-            "id_usuario": usuario["id"],
-            "fecha_creacion": date.today().strftime("%d-%m-%Y"),
-            "estado": "Pendiente",
-        }
-    )
+def crear_tarea(tareas: list[Tarea], form, usuario: Usuario):
+    nueva_tarea: Tarea = {
+        "id": utils.generar_id(),
+        "id_usuario": usuario["id"],
+        "fecha_creacion": date.today().strftime("%d-%m-%Y"),
+        "fecha_vencimiento": None
+        if form["fecha_vencimiento"] == "-"
+        else form["fecha_vencimiento"],
+        "titulo": form["titulo"],
+        "categoria": form["categoria"],
+        "estado": "Pendiente",
+    }
+
     repo.crear_tarea(nueva_tarea)
     tareas.append(nueva_tarea)
 
