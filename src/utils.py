@@ -16,13 +16,14 @@ from src.schemas import Campo, EstadoTarea, Menu, Tarea
 
 
 def abrir_navegador(ruta: str):
+    """Abre el navegador web en la ruta indicada."""
     try:
         path = Path(ruta).resolve().as_uri()
         exito = webbrowser.open(path)
         if not exito:
-            raise Exception("Error al abrir el navegador")
-    except Exception:
-        pass
+            cli.print_error("Error al abrir el navegador")
+    except Exception as e:
+        raise Exception("Error al abrir navegador.") from e
 
 
 def dias_desde_hoy(fecha: str) -> int:
@@ -62,6 +63,11 @@ def estilar_vigencia_tarea(fecha: str | None, estado: EstadoTarea) -> str:
 
 
 def formatear_form(campos: list[Campo]) -> str:
+    """
+    Formatea los datos mostrados por un formulario. Si los campos no tienen
+    calor, se muestra el Label + el Placeholder. A medida que se solicitan los
+    datos, el placeholder se reemplaza por el texto ingresado por el usuario.
+    """
     return "\n\n".join(
         [
             f"👉 {c['label']}: [dim not bold]{c['placeholder']}[/]"
