@@ -4,7 +4,7 @@ import src.lib.archivos as gestor
 import src.lib.consola as cli
 import src.repositorio as repo
 import src.utils as utils
-from src.schemas import Extension, Tarea, Usuario
+from src.schemas import EstadoTarea, Extension, Tarea, Usuario
 
 
 def login():
@@ -25,6 +25,7 @@ def login():
     return None
 
 
+# TODO: controlar mayusculas en nombre de usuario
 def crear_usuario(nombre_usuario: str):
     nombre = cli.input_texto("Ingrese su nombre", 3)
     clave = cli.input_texto("Ingrese su clave", 5)
@@ -80,13 +81,31 @@ def eliminar_finalizadas(tareas: list[Tarea], usuario: Usuario) -> str:
         ],
         reverse=True,
     )
-    if not len(indices_finalizadas):
+    cantidad_tareas = len(indices_finalizadas)
+    if not cantidad_tareas:
         return "No hay tareas con estado 'Finalizada'"
 
     repo.eliminar_tareas_finalizadas(usuario["id"])
+    palabras = ("han", "tareas") if cantidad_tareas > 1 else ("ha", "tarea")
     for i in indices_finalizadas:
         tareas.pop(i)
-    return f"Se han eliminado {len(indices_finalizadas)} tarea(s)"
+    return f"Se {palabras[0]} eliminado {cantidad_tareas} {palabras[1]}"
+
+
+def cambiar_estado_tarea(
+    tareas: list[Tarea], tarea: Tarea, estado: int
+) -> str:
+    estados: list[EstadoTarea] = ["Pendiente", "En proceso", "Finalizada"]
+    nuevo_estado = estados[estado - 1]
+
+    if tarea["estado"] == nuevo_estado:
+        return "Sin cambios. El estado no se ha modificado."
+
+    repo.cambiar_estado_tarea(tarea["id"], nuevo_estado)
+    for t in tareas:
+        if t["id"] == tarea["id"]:
+            t["estado"] = nuevo_estado
+    return "Tarea modificada correctamente."
 
 
 def exportar_tareas(
@@ -94,9 +113,9 @@ def exportar_tareas(
     usuario: Usuario,
     extensiones: tuple[Extension, ...],
     carpeta: str,
-):
-    if not len(tareas):
-        pass
+) -> str:
+    if not extensiones:
+        return "No seleccionó ningún formato."
 
     if ".text" in extensiones:
         pass
@@ -111,3 +130,5 @@ def exportar_tareas(
 
     if ".html" in extensiones:
         pass
+
+    return ""
