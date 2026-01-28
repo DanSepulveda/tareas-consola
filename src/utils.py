@@ -1,8 +1,8 @@
 """
 Módulo de utilidades generales (Helpers).
 
-Módulo con funciones de apoyo no ligadas a la lógica de la aplicación,
-como generación de ids, manejo de directorios, etc.
+Módulo con funciones de apoyo para generar ids, obtener hash de clave,
+realizar ciertas operaciones, y dar formato a algunas salidas de texto.
 """
 
 import hashlib
@@ -35,31 +35,30 @@ def dias_desde_hoy(fecha: str) -> int:
 
 
 def estilar_estado_tarea(estado: EstadoTarea):
+    """Agrega color al estado de la tarea para identificarlas fácilmente."""
     colors = {
         "Finalizada": "green",
         "En proceso": "blue",
         "Pendiente": "yellow",
     }
-
-    return f"[{colors.get(estado)}]{estado}[/]"
+    return f"[{colors[estado]}]{estado}[/]"
 
 
 def estilar_vigencia_tarea(fecha: str | None, estado: EstadoTarea) -> str:
-    if fecha is None:
+    """Genera un texto en color para identificar la fecha límite de una tarea."""
+    if fecha is None or estado == "Finalizada":
         return ""
 
-    if estado == "Finalizada":
-        return estado
-
     dias = dias_desde_hoy(fecha)
+    palabra = "día" if abs(dias) == 1 else "días"
 
     if dias < 0:
-        return f"[red]Atrasada {abs(dias)} día(s)[/]"
+        return f"[red]Atrasada ({abs(dias)} {palabra})[/]"
     if dias == 0:
         return "[yellow]Vence hoy[/]"
     if dias < 4:
-        return f"[blue]Vence pronto - {dias} día(s)[/]"
-    return "[green]Dentro de plazo[/]"
+        return f"[blue]Vence pronto ({dias} {palabra})[/]"
+    return f"[green]A tiempo ({dias} {palabra})[/]"
 
 
 def formatear_form(campos: list[Campo]) -> str:
@@ -83,7 +82,13 @@ def generar_id() -> str:
     return str(uuid.uuid4())
 
 
-def generar_tabla_tareas(tareas: list[Tarea]):
+def generar_datos_tabla(
+    tareas: list[Tarea], destacar_finalizadas: bool = False
+):
+    """
+    Genera las filas y columnas para mostrar las tareas en una tabla.
+    Opcionalmente se pueden destacar las tareas finalizadas.
+    """
     columnas = [
         "ID",
         "Título",
@@ -96,7 +101,9 @@ def generar_tabla_tareas(tareas: list[Tarea]):
     filas = [
         [
             str(indice),
-            t["titulo"],
+            f"[white on red]{t['titulo']}[]"
+            if destacar_finalizadas and t["estado"] == "Finalizada"
+            else t["titulo"],
             t["categoria"],
             t["fecha_creacion"],
             t["fecha_vencimiento"],
@@ -108,8 +115,11 @@ def generar_tabla_tareas(tareas: list[Tarea]):
     return (columnas, filas)
 
 
-def opcion_desde_menu(menu: Menu):
-    """Imprime en consola un menú y retorna la opción elegida por el usuario."""
+def obtener_opcion_menu(menu: Menu):
+    """
+    Imprime en consola un menú, solicita una opción al usuario y
+    retorna la opción, previamente validada.
+    """
     titulo, opciones = menu["titulo"], menu["opciones"]
     cli.print_panel(titulo=titulo, contenido="\n\n".join(opciones))
     opcion = cli.input_entero("Ingrese una opción", min=1, max=len(opciones))
