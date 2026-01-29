@@ -1,7 +1,7 @@
 import src.lib.consola as cli
 import src.servicios as servicios
 import src.utils as utils
-from src.schemas import EstadoGlobal, Extension, Form, Menu
+from src.definiciones.schemas import EstadoGlobal, Extension, Form, Menu
 
 
 def menu_principal(estado: EstadoGlobal):
@@ -179,7 +179,7 @@ def eliminar_finalizadas(estado: EstadoGlobal):
 
 
 def exportar_datos(estado: EstadoGlobal):
-    tareas, usuario = estado["tareas"], estado["usuario"]
+    tareas = estado["tareas"]
 
     # 1) SI NO HAY TAREAS -> se muestra mensaje y regresa al menú
     if not tareas:
@@ -190,7 +190,7 @@ def exportar_datos(estado: EstadoGlobal):
     # 2) SI HAY TAREAS -> solicitar tipo de archivos a exportar
     cli.print_panel("EXPORTAR DATOS", "Indique los formatos que necesita.")
 
-    extensiones: tuple[Extension, ...] = (".txt", ".csv", ".json", ".html")
+    extensiones: tuple[Extension, ...] = (".csv", ".json", ".html")
     extensiones_incluidas: tuple[Extension, ...] = tuple(
         opcion
         for indice, opcion in enumerate(extensiones, 1)
@@ -200,9 +200,13 @@ def exportar_datos(estado: EstadoGlobal):
     )
     carpeta = cli.input_texto("Nombre de la carpeta de destino")
 
+    abrir = False
+    if ".html" in extensiones_incluidas:
+        abrir = cli.input_confirmar("¿Desea ver la versión web al finalizar?")
+
     # 3) EJECUTAR EL SERVICIO Y MOSTRAR RESPUESTA
     respuesta = servicios.exportar_tareas(
-        tareas, usuario, extensiones_incluidas, carpeta
+        tareas, extensiones_incluidas, carpeta, abrir
     )
     cli.print_panel("INFORMACIÓN", respuesta)
     cli.input_continuar("volver al menú principal")

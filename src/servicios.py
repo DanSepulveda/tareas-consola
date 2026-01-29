@@ -1,15 +1,36 @@
+import json
 from datetime import date
 
 import src.lib.archivos as gestor
 import src.lib.consola as cli
 import src.repositorio as repo
 import src.utils as utils
-from src.schemas import EstadoTarea, Extension, Tarea, Usuario
+from src.definiciones.constantes import Rutas
+from src.definiciones.schemas import EstadoTarea, Extension, Tarea, Usuario
+
+
+def es_clave_correcta(hash: str) -> bool:
+    """Solicita clave al usuario y la compara con el hash almacenado (3 intentos)"""
+    intentos = 3
+    while intentos > 0:
+        clave_ingresada = cli.input_texto("Ingrese su clave", 1, 20)
+
+        if utils.generar_hash(clave_ingresada) == hash:
+            return True
+
+        intentos -= 1
+        cli.print_error(
+            f"Clave incorrecta. Queda(n) {intentos} intento(s)."
+            if intentos > 0
+            else "Acceso denegado. No quedan intentos."
+        )
+
+    return False
 
 
 def login():
     """Hace login de un usuario. Si no existe, deriva a su creación."""
-    nombre_usuario = cli.input_texto("Nombre de usuario", 5, 20)
+    nombre_usuario = cli.input_texto("Nombre de usuario", 5, 20).lower()
     usuario_buscado = repo.buscar_usuario(nombre_usuario)
 
     if usuario_buscado and es_clave_correcta(usuario_buscado["hash"]):
@@ -25,7 +46,6 @@ def login():
     return None
 
 
-# TODO: controlar mayusculas en nombre de usuario
 def crear_usuario(nombre_usuario: str):
     nombre = cli.input_texto("Ingrese su nombre", 3)
     clave = cli.input_texto("Ingrese su clave", 5)
@@ -33,7 +53,7 @@ def crear_usuario(nombre_usuario: str):
     nuevo_usuario: Usuario = {
         "id": utils.generar_id(),
         "nombre": nombre,
-        "nombre_usuario": nombre_usuario,
+        "nombre_usuario": nombre_usuario.lower(),
         "hash": utils.generar_hash(clave),
     }
     repo.crear_usuario(nuevo_usuario)
@@ -55,25 +75,6 @@ def crear_tarea(tareas: list[Tarea], form, usuario: Usuario):
 
     repo.crear_tarea(nueva_tarea)
     tareas.append(nueva_tarea)
-
-
-def es_clave_correcta(hash: str) -> bool:
-    """Solicita clave al usuario y la compara con el hash almacenado (3 intentos)"""
-    intentos = 3
-    while intentos > 0:
-        clave_ingresada = cli.input_texto("Ingrese su clave", 1, 20)
-
-        if utils.generar_hash(clave_ingresada) == hash:
-            return True
-
-        intentos -= 1
-        cli.print_error(
-            f"Clave incorrecta. Queda(n) {intentos} intento(s)."
-            if intentos > 0
-            else "Acceso denegado. No quedan intentos."
-        )
-
-    return False
 
 
 def eliminar_finalizadas(tareas: list[Tarea], usuario: Usuario) -> str:
@@ -114,25 +115,38 @@ def cambiar_estado_tarea(
 
 def exportar_tareas(
     tareas: list[Tarea],
-    usuario: Usuario,
     extensiones: tuple[Extension, ...],
     carpeta: str,
+    abrir_web: bool,
 ) -> str:
     if not extensiones:
         return "No seleccionó ningún formato."
 
-    if ".text" in extensiones:
-        pass
+    ruta_base = f"{Rutas.EXPORTACIONES}/{carpeta}"
 
     if ".csv" in extensiones:
-        print("llego aca")
         encabezados = list(tareas[0].keys())
-        gestor.guardar_csv("exportado/datos.csv", encabezados, tareas)
+        gestor.guardar_csv(f"{ruta_base}/tareas.csv", encabezados, tareas)
 
     if ".json" in extensiones:
-        gestor.guardar_json("exportado/datos.json", tareas)
+        gestor.guardar_json(f"{ruta_base}/tareas.json", tareas)
 
     if ".html" in extensiones:
-        pass
+        a_exportar = [
+            {
+                **t,
+                "vigencia": utils.estilar_vigencia_tarea(
+                    t["fecha_vencimiento"], t["estado"]
+                ),
+            }
+            for t in tareas
+        ]
+        tareas_json = json.dumps(a_exportar, indent=4, ensure_ascii=False)
+        contenido = f"const tareas = {tareas_json};"
+        gestor.guardar_texto_plano(f"{ruta_base}/web/main.js", contenido)
+        gestor.copiar_archivo(Rutas.PLANTILLA, f"{ruta_base}/web/index.html")
+        gestor.copiar_archivo(Rutas.FAVICON, f"{ruta_base}/web/favicon.ico")
+        if abrir_web:
+            utils.abrir_navegador(f"{ruta_base}/web/index.html")
 
-    return ""
+    return "Datos exportados correctamente"

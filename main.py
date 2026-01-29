@@ -1,6 +1,6 @@
 import src.lib.consola as cli
 import src.repositorio as repo
-from src.constantes import Config
+from src.definiciones.constantes import Config
 from src.navegacion import menu_principal
 from src.servicios import login
 
