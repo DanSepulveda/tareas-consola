@@ -7,8 +7,8 @@ el filtrado y el registro de la información de la aplicación.
 """
 
 import src.lib.archivos as gestor
-from src.constantes import Rutas
-from src.schemas import EstadoTarea, Tarea, Usuario
+from src.definiciones.constantes import Rutas
+from src.definiciones.schemas import EstadoTarea, Tarea, Usuario
 
 
 def buscar_usuario(nombre_usuario: str) -> Usuario | None:

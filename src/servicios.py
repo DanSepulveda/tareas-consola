@@ -144,8 +144,8 @@ def exportar_tareas(
         tareas_json = json.dumps(a_exportar, indent=4, ensure_ascii=False)
         contenido = f"const tareas = {tareas_json};"
         gestor.guardar_texto_plano(f"{ruta_base}/web/main.js", contenido)
-        gestor.copiar_archivo(Rutas.PLANTILLA, f"{ruta_base}/web/index.html")
-        gestor.copiar_archivo(Rutas.FAVICON, f"{ruta_base}/web/favicon.ico")
+        gestor.copiar_archivo(Rutas.PLANTILLA, f"{ruta_base}/web")
+        gestor.copiar_archivo(Rutas.FAVICON, f"{ruta_base}/web")
         if abrir_web:
             utils.abrir_navegador(f"{ruta_base}/web/index.html")
 

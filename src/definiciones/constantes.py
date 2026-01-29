@@ -12,8 +12,8 @@ class Rutas(StrEnum):
     USUARIOS = "datos/usuarios.csv"
     TAREAS = "datos/tareas.json"
     EXPORTACIONES = "exportaciones/"
-    PLANTILLA = "src/recursos/plantilla.html"
-    FAVICON = "src/recursos/favicon.ico"
+    PLANTILLA = "src/plantilla/index.html"
+    FAVICON = "src/plantilla/favicon.ico"
 
 
 class Config(StrEnum):

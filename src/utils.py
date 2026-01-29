@@ -12,7 +12,7 @@ from datetime import date
 from pathlib import Path
 
 import src.lib.consola as cli
-from src.schemas import Campo, EstadoTarea, Menu, Tarea
+from src.definiciones.schemas import Campo, EstadoTarea, Menu, Tarea
 
 
 def abrir_navegador(ruta: str):
