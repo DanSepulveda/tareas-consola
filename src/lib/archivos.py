@@ -8,7 +8,6 @@ la copia de archivos de un directorio a otro.
 
 import csv
 import json
-import shutil
 from pathlib import Path
 from typing import Any
 
@@ -27,7 +26,7 @@ def copiar_archivo(ruta_archivo: str, ruta_destino: str):
         path_archivo = Path(ruta_archivo)
         path_destino = Path(ruta_destino)
         crear_directorio(ruta_destino)
-        shutil.copy(path_archivo, path_destino)
+        path_archivo.copy_into(path_destino)
     except Exception as e:
         raise Exception("Error al copiar archivo.") from e
 
