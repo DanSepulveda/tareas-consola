@@ -20,13 +20,27 @@ Aplicación desarrollada en Python para la administración de tareas.
     ```
 
 2.  **Configura el entorno (opcional pero recomendado):**
+    - En Windows
 
     ```bash
     python -m venv .venv
-    source venv/bin/activate  # En Windows: venv\Scripts\activate
+    source .venv\Scripts\activate
     ```
 
-3.  **Ejecuta la aplicación:**
+    - En MAC
+
+    ```bash
+    python3 -m venv .venv
+    source .venv/bin/activate
+    ```
+
+3.  **Instalación de dependencias**
+
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+4.  **Ejecuta la aplicación:**
     ```bash
     python main.py
     ```
