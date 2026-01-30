@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tareapp"
+version = "0.1.0"
+dependencies = [
+    "markdown-it-py",
+    "mdurl",
+    "Pygments",
+    "rich"
+]
+
+[project.scripts]
+tareapp = "main:main"
