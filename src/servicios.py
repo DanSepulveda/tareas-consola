@@ -10,54 +10,41 @@ import json
 from datetime import date
 
 import src.lib.archivos as gestor
-import src.lib.consola as cli
 import src.repositorio as repo
 import src.utils as utils
 from src.definiciones.constantes import Rutas
-from src.definiciones.schemas import EstadoTarea, Extension, Tarea, Usuario
+from src.definiciones.schemas import (
+    EstadoGlobal,
+    EstadoTarea,
+    Extension,
+    Tarea,
+    Usuario,
+)
 
 
-def es_clave_correcta(hash: str) -> bool:
-    """Solicita clave al usuario y la compara con el hash almacenado (3 intentos)"""
-    intentos = 3
-    while intentos > 0:
-        clave_ingresada = cli.input_texto("Ingrese su clave", 1, 20)
+def login(nombre_usuario: str, clave: str) -> str | EstadoGlobal:
+    """Autentica a un usuario registrado."""
+    usuario = repo.buscar_usuario(nombre_usuario)
 
-        if utils.generar_hash(clave_ingresada) == hash:
-            return True
+    if not usuario:
+        return "El usuario no se encuentra registrado."
 
-        intentos -= 1
-        cli.print_error(
-            f"Clave incorrecta. Queda(n) {intentos} intento(s)."
-            if intentos > 0
-            else "Acceso denegado. No quedan intentos."
-        )
+    if utils.generar_hash(clave) != usuario["hash"]:
+        return "Clave incorrecta."
 
-    return False
+    tareas = repo.obtener_tareas_usuario(usuario["id"])
+
+    return {"usuario": usuario, "tareas": tareas}
 
 
-def login():
-    """Hace login de un usuario. Si no existe, deriva a su creación."""
-    nombre_usuario = cli.input_texto("Nombre de usuario", 5, 20).lower()
-    usuario_buscado = repo.buscar_usuario(nombre_usuario)
-
-    if usuario_buscado and es_clave_correcta(usuario_buscado["hash"]):
-        return usuario_buscado
-
-    if not usuario_buscado:
-        cli.print_alerta("Usuario no registrado.")
-        confirmacion = cli.input_confirmar("¿Desea crearlo?")
-
-        if confirmacion:
-            return crear_usuario(nombre_usuario)
-
-    return None
-
-
-def crear_usuario(nombre_usuario: str):
+def crear_usuario(
+    nombre_usuario: str, nombre: str, clave: str
+) -> str | EstadoGlobal:
     """Crea un nuevo usuario en el sistema."""
-    nombre = cli.input_texto("Ingrese su nombre", 3)
-    clave = cli.input_texto("Ingrese su clave", 5)
+    existe_usuario = bool(repo.buscar_usuario(nombre_usuario))
+
+    if existe_usuario:
+        return "El usuario ya se encuentra registrado"
 
     nuevo_usuario: Usuario = {
         "id": utils.generar_id(),
@@ -66,7 +53,7 @@ def crear_usuario(nombre_usuario: str):
         "hash": utils.generar_hash(clave),
     }
     repo.crear_usuario(nuevo_usuario)
-    return nuevo_usuario
+    return {"usuario": nuevo_usuario, "tareas": []}
 
 
 def crear_tarea(tareas: list[Tarea], form, usuario: Usuario):

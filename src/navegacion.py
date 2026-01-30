@@ -10,7 +10,63 @@ pantallas y la invocación de servicios.
 import src.lib.consola as cli
 import src.servicios as servicios
 import src.utils as utils
+from src.definiciones.constantes import Config
 from src.definiciones.schemas import EstadoGlobal, Extension, Form, Menu
+
+
+def menu_acceso():
+    bienvenida = f"Bienvenido a [green_yellow]{Config.NOMBRE_APP}[/], el programa N°1 para la Administración de Tareas.\n\n"
+
+    menu: Menu = {
+        "titulo": Config.NOMBRE_APP,
+        "opciones": [
+            bienvenida + "🔸 1. Iniciar Sesión",
+            "🔸 2. Crear Cuenta",
+            "🔸 3. Salir del sistema",
+        ],
+    }
+    opcion = utils.obtener_opcion_menu(menu)
+
+    match opcion:
+        case 1:
+            iniciar_sesion()
+        case 2:
+            crear_cuenta()
+        case 3:
+            return
+
+    menu_acceso()
+
+
+def iniciar_sesion():
+    usuario = cli.input_texto("Nombre de usuario", 4, 20).lower()
+    clave = cli.input_texto("Ingrese su clave", 1, 20)
+
+    respuesta = servicios.login(usuario, clave)
+
+    if isinstance(respuesta, str):
+        cli.print_panel("INFORMACIÓN", respuesta)
+        return
+
+    cli.print_exito("¡Acceso concedido!")
+    cli.input_continuar("continuar")
+    menu_principal(respuesta)
+
+
+def crear_cuenta():
+    usuario = cli.input_texto("Nombre de usuario", 5, 20).lower()
+    nombre = cli.input_texto("Ingrese su nombre", 3)
+    clave = cli.input_texto("Ingrese su clave", 5)
+
+    respuesta = servicios.crear_usuario(usuario, nombre, clave)
+
+    if isinstance(respuesta, str):
+        cli.print_panel("INFORMACIÓN", respuesta)
+        return
+
+    cli.print_exito("Usuario creado exitosamente.")
+    cli.input_continuar("continuar")
+    menu_principal(respuesta)
 
 
 def menu_principal(estado: EstadoGlobal):
