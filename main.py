@@ -1,6 +1,6 @@
 import src.lib.consola as cli
+from src.controlador import menu_acceso
 from src.definiciones.constantes import Config
-from src.navegacion import menu_acceso
 
 
 def main():

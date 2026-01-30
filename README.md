@@ -63,7 +63,7 @@ tareas-consola/
 │   ├── plantilla/            # Plantilla usada al exportar datos en formato web
 │   │   ├── index.html
 │   │   └── favicon.ico
-│   ├── navegacion.py         # Controla el flujo de la la app mediante las interacciones del usuario.
+│   ├── controlador.py        # Controla el flujo de la la app mediante las interacciones del usuario.
 │   ├── repositorio.py        # Se encarga de obtener y almacenar información en "Base de datos"
 │   ├── servicios.py          # Maneja la lógica de la app (login, creación tareas y usuarios, etc)
 │   └── utils.py              # Conjunto de utilidades ligadas al proyecto (formato, filtros, etc)

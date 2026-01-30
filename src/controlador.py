@@ -1,5 +1,5 @@
 """
-Módulo de Navegación y Flujo de Usuario (Controller)
+Módulo de Navegación y Flujo de Usuario (Controlador)
 
 Este módulo actúa como el orquestador principal de la aplicación.
 Gestiona el ciclo de vida de la interacción con el usuario mediante la
