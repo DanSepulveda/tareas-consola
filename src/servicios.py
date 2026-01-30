@@ -1,3 +1,11 @@
+"""
+Módulo de Servicios (Capa de Lógica de Negocio)
+
+Este módulo contiene las funciones core de la aplicación, encargándose de
+procesar la información y aplicar las reglas de negocio antes de la
+persistencia de datos.
+"""
+
 import json
 from datetime import date
 
@@ -47,6 +55,7 @@ def login():
 
 
 def crear_usuario(nombre_usuario: str):
+    """Crea un nuevo usuario en el sistema."""
     nombre = cli.input_texto("Ingrese su nombre", 3)
     clave = cli.input_texto("Ingrese su clave", 5)
 
@@ -61,6 +70,7 @@ def crear_usuario(nombre_usuario: str):
 
 
 def crear_tarea(tareas: list[Tarea], form, usuario: Usuario):
+    """Crea una tarea a partir de los datos ingresados por el usuario."""
     nueva_tarea: Tarea = {
         "id": utils.generar_id(),
         "id_usuario": usuario["id"],
@@ -78,6 +88,7 @@ def crear_tarea(tareas: list[Tarea], form, usuario: Usuario):
 
 
 def eliminar_finalizadas(tareas: list[Tarea], usuario: Usuario) -> str:
+    """Elimina las tareas con estado 'Finalizada' asociadas a un id_usuario."""
     indices_finalizadas = sorted(
         [
             indice
@@ -100,6 +111,7 @@ def eliminar_finalizadas(tareas: list[Tarea], usuario: Usuario) -> str:
 def cambiar_estado_tarea(
     tareas: list[Tarea], tarea: Tarea, estado: int
 ) -> str:
+    """Cambia el estado de una única tarea."""
     estados: list[EstadoTarea] = ["Pendiente", "En proceso", "Finalizada"]
     nuevo_estado = estados[estado - 1]
 
@@ -119,6 +131,7 @@ def exportar_tareas(
     carpeta: str,
     abrir_web: bool,
 ) -> str:
+    """Exporta los datos en los formatos especificados."""
     if not extensiones:
         return "No seleccionó ningún formato."
 

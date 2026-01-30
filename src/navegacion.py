@@ -1,3 +1,12 @@
+"""
+Módulo de Navegación y Flujo de Usuario (Controller)
+
+Este módulo actúa como el orquestador principal de la aplicación.
+Gestiona el ciclo de vida de la interacción con el usuario mediante la
+presentación de menús, solicitud de datos, la lógica de navegación entre
+pantallas y la invocación de servicios.
+"""
+
 import src.lib.consola as cli
 import src.servicios as servicios
 import src.utils as utils

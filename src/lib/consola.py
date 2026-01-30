@@ -89,6 +89,7 @@ def input_entero(
 
 
 def input_fecha(mensaje: str, permitir_vacio: bool = True):
+    """Solicita y valida una fecha con formato dd-mm-aaaa"""
     while True:
         fecha = consola.input(f"[input]{mensaje}:[/] ")
         if fecha == "" and permitir_vacio:
