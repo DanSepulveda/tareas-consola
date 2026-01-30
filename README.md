@@ -33,19 +33,19 @@ Aplicación desarrollada en Python para la administración de tareas.
 
 ## Estructura del proyecto
 
-```python
+```bash
 tareas-consola/
 ├── datos/                    # Almacena los datos que genera la APP (Base de datos)
-│   ├── tareas.json                - almacena las tareas de todos los usuarios
-│   └── usuarios.csv               - almacena los usuarios registrados
+│   ├── tareas.json                # - almacena las tareas de todos los usuarios
+│   └── usuarios.csv               # - almacena los usuarios registrados
 ├── exportaciones/            # Carpeta donde se almacenan los datos exportados
 ├── src/                      # Código fuente de la aplicación
 │   ├── definiciones/         # Definición de constantes (Rutas) y tipos de datos (Esquemas)
-│   │   ├── constantes.py          - define las rutas de archivos y carpetas
-│   │   └── schemas.py             - tipado de datos
+│   │   ├── constantes.py          # - define las rutas de archivos y carpetas
+│   │   └── schemas.py             # - tipado de datos
 │   ├── lib/                  # Conjunto de utilidades no ligadas a la lógica de la APP
-│   │   ├── archivos.py            - leer/escribir archivos, crear directorios, etc
-│   │   └── consola.py             - mostrar información en consola, o solicitar datos
+│   │   ├── archivos.py            # - leer/escribir archivos, crear directorios, etc
+│   │   └── consola.py             # - mostrar información en consola, o solicitar datos
 │   ├── plantilla/            # Plantilla usada al exportar datos en formato web
 │   │   ├── index.html
 │   │   └── favicon.ico
