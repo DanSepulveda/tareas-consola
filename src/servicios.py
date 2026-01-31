@@ -120,7 +120,7 @@ def exportar_tareas(
     if not extensiones:
         return "error:No seleccionó ningún formato."
 
-    ruta_base = f"{Rutas.EXPORTACIONES}/{carpeta}"
+    ruta_base = f"{Rutas.EXPORTACIONES}{carpeta}"
 
     if ".csv" in extensiones:
         encabezados = list(tareas[0].keys())
@@ -147,4 +147,4 @@ def exportar_tareas(
         if abrir_web:
             utils.abrir_navegador(f"{ruta_base}/web/index.html")
 
-    return "ok:Datos exportados exitosamente."
+    return f"ok:Datos exportados exitosamente en [blue]{ruta_base}[/blue]"
