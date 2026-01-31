@@ -39,6 +39,7 @@ def menu_acceso():
 
 
 def iniciar_sesion():
+    cli.print_exito("Ingrese sus datos para iniciar sesión.")
     usuario = cli.input_texto("Nombre de usuario", 4, 20).lower()
     clave = cli.input_texto("Ingrese su clave", 1, 20)
 
@@ -53,9 +54,10 @@ def iniciar_sesion():
 
 
 def crear_cuenta():
+    cli.print_exito("Ingrese los siguientes datos para crear una cuenta.")
     usuario = cli.input_texto("Nombre de usuario", 5, 20).lower()
     nombre = cli.input_texto("Ingrese su nombre", 3)
-    clave = cli.input_texto("Ingrese su clave", 5, 20)
+    clave = cli.input_texto("Ingrese una contraseña", 5, 20)
 
     respuesta = servicios.crear_usuario(usuario, nombre, clave)
 
