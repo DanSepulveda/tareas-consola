@@ -45,27 +45,25 @@ def iniciar_sesion():
     respuesta = servicios.login(usuario, clave)
 
     if isinstance(respuesta, str):
-        cli.print_panel("INFORMACIÓN", respuesta)
+        cli.print_toast(respuesta)
         return
 
-    cli.print_exito("¡Acceso concedido!")
-    cli.input_continuar("continuar")
+    cli.print_toast("ok:Inicio de sesión exitoso.")
     menu_principal(respuesta)
 
 
 def crear_cuenta():
     usuario = cli.input_texto("Nombre de usuario", 5, 20).lower()
     nombre = cli.input_texto("Ingrese su nombre", 3)
-    clave = cli.input_texto("Ingrese su clave", 5)
+    clave = cli.input_texto("Ingrese su clave", 5, 20)
 
     respuesta = servicios.crear_usuario(usuario, nombre, clave)
 
     if isinstance(respuesta, str):
-        cli.print_panel("INFORMACIÓN", respuesta)
+        cli.print_toast(respuesta)
         return
 
-    cli.print_exito("Usuario creado exitosamente.")
-    cli.input_continuar("continuar")
+    cli.print_toast("ok:Usuario creado exitosamente.")
     menu_principal(respuesta)
 
 
@@ -89,7 +87,7 @@ def menu_principal(estado: EstadoGlobal):
         case 3:
             exportar_datos(estado)
         case 4:
-            cli.print_alerta("Ha cerrado la sesión.")
+            cli.print_toast("info:Ha cerrado la sesión.")
             return
 
     menu_principal(estado)
@@ -138,10 +136,9 @@ def formulario_agregar(estado: EstadoGlobal):
 
     # 3) Se arma la tarea iterando cada campo y extrayendo su "nombre" y "valor"
     nueva_tarea = {c["nombre"]: c.get("valor") for c in campos}
-    servicios.crear_tarea(tareas, nueva_tarea, usuario)
+    respuesta = servicios.crear_tarea(tareas, nueva_tarea, usuario)
 
-    cli.print_exito("Tarea agregada correctamente 🎉")
-    cli.input_continuar("volver al menú principal")
+    cli.print_toast(respuesta, "volver al menú principal")
 
 
 def listar_tareas(estado: EstadoGlobal):
@@ -149,8 +146,7 @@ def listar_tareas(estado: EstadoGlobal):
 
     # 1) SI NO HAY TAREAS -> se muestra mensaje y regresa al menú
     if not tareas:
-        cli.print_panel("INFORMACIÓN", "No hay tareas registradas")
-        cli.input_continuar("volver al menú principal")
+        cli.print_toast("info:No hay tareas registradas.", "volver al menú")
         return
 
     # 2) SI HAY TAREAS -> se muestran en una tabla
@@ -207,8 +203,7 @@ def cambiar_estado(estado: EstadoGlobal):
 
     # 4) SE EJECUTA EL SERVICIO Y SE MUESTRA EL RESULTADO
     respuesta = servicios.cambiar_estado_tarea(tareas, tarea, nuevo_estado)
-    cli.print_panel("INFORMACIÓN", respuesta)
-    cli.input_continuar("volver al listado")
+    cli.print_toast(respuesta)
 
 
 def eliminar_finalizadas(estado: EstadoGlobal):
@@ -217,8 +212,7 @@ def eliminar_finalizadas(estado: EstadoGlobal):
     # 1) SI NO HAY TAREAS FINALIZADAS -> se muetra mensaje y regresa al menú
     hay_finalizadas = any(t["estado"] == "Finalizada" for t in tareas)
     if not hay_finalizadas:
-        cli.print_panel("INFORMACIÓN", "No hay tareas finalizadas")
-        cli.input_continuar("volver al listado")
+        cli.print_toast("info:No hay tareas finalizadas.", "volver al listado")
         return
 
     # 2) SI HAY TAREAS FINALIZADAS -> se listan, destacando las que serán eliminadas
@@ -233,14 +227,12 @@ def eliminar_finalizadas(estado: EstadoGlobal):
     # 3) SI NO CONFIRMA LA ELIMINACIÓN -> se cancela la operación
     confirmacion = cli.input_confirmar("¿Confirma eliminación?")
     if not confirmacion:
-        cli.print_panel("INFORMACIÓN", "Operación cancelada")
-        cli.input_continuar("volver al listado")
+        cli.print_toast("info:Operación cancelada.", "volver al listado")
         return
 
     # 4) SI CONFIRMA LA ELIMINACIÓN -> se muestra el resultado
     respuesta = servicios.eliminar_finalizadas(tareas, usuario)
-    cli.print_panel("INFORMACIÓN", respuesta)
-    cli.input_continuar("volver al listado")
+    cli.print_toast(respuesta, "volver al listado")
 
 
 def exportar_datos(estado: EstadoGlobal):
@@ -248,12 +240,11 @@ def exportar_datos(estado: EstadoGlobal):
 
     # 1) SI NO HAY TAREAS -> se muestra mensaje y regresa al menú
     if not tareas:
-        cli.print_panel("INFORMACIÓN", "No hay datos para exportar")
-        cli.input_continuar("volver al menú principal")
+        cli.print_toast("info:No hay datos para exportar")
         return
 
     # 2) SI HAY TAREAS -> solicitar tipo de archivos a exportar
-    cli.print_panel("EXPORTAR DATOS", "Indique los formatos que necesita.")
+    cli.print_panel("EXPORTAR DATOS", "Complete la siguiente información.")
 
     extensiones: tuple[Extension, ...] = (".csv", ".json", ".html")
     extensiones_incluidas: tuple[Extension, ...] = tuple(
@@ -273,5 +264,4 @@ def exportar_datos(estado: EstadoGlobal):
     respuesta = servicios.exportar_tareas(
         tareas, extensiones_incluidas, carpeta, abrir
     )
-    cli.print_panel("INFORMACIÓN", respuesta)
-    cli.input_continuar("volver al menú principal")
+    cli.print_toast(respuesta, "volver al menú principal")

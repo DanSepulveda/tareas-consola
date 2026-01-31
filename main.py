@@ -6,6 +6,8 @@ from src.definiciones.constantes import Config
 def main():
     try:
         menu_acceso()
+    except KeyboardInterrupt:
+        pass
     except Exception as e:
         cli.print_error(str(e))
     finally:

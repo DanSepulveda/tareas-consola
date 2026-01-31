@@ -27,13 +27,12 @@ def login(nombre_usuario: str, clave: str) -> str | EstadoGlobal:
     usuario = repo.buscar_usuario(nombre_usuario)
 
     if not usuario:
-        return "El usuario no se encuentra registrado."
+        return "error:El usuario no se encuentra registrado."
 
     if utils.generar_hash(clave) != usuario["hash"]:
-        return "Clave incorrecta."
+        return "error:Clave incorrecta."
 
     tareas = repo.obtener_tareas_usuario(usuario["id"])
-
     return {"usuario": usuario, "tareas": tareas}
 
 
@@ -44,7 +43,7 @@ def crear_usuario(
     existe_usuario = bool(repo.buscar_usuario(nombre_usuario))
 
     if existe_usuario:
-        return "El usuario ya se encuentra registrado"
+        return "error:El usuario ya se encuentra registrado"
 
     nuevo_usuario: Usuario = {
         "id": utils.generar_id(),
@@ -56,7 +55,7 @@ def crear_usuario(
     return {"usuario": nuevo_usuario, "tareas": []}
 
 
-def crear_tarea(tareas: list[Tarea], form, usuario: Usuario):
+def crear_tarea(tareas: list[Tarea], form, usuario: Usuario) -> str:
     """Crea una tarea a partir de los datos ingresados por el usuario."""
     nueva_tarea: Tarea = {
         "id": utils.generar_id(),
@@ -72,6 +71,7 @@ def crear_tarea(tareas: list[Tarea], form, usuario: Usuario):
 
     repo.crear_tarea(nueva_tarea)
     tareas.append(nueva_tarea)
+    return "ok:Tarea agregada exitosamente."
 
 
 def eliminar_finalizadas(tareas: list[Tarea], usuario: Usuario) -> str:
@@ -85,14 +85,12 @@ def eliminar_finalizadas(tareas: list[Tarea], usuario: Usuario) -> str:
         reverse=True,
     )
     cantidad_tareas = len(indices_finalizadas)
-    if not cantidad_tareas:
-        return "No hay tareas con estado 'Finalizada'"
 
     repo.eliminar_tareas_finalizadas(usuario["id"])
     palabras = ("han", "tareas") if cantidad_tareas > 1 else ("ha", "tarea")
     for i in indices_finalizadas:
         tareas.pop(i)
-    return f"Se {palabras[0]} eliminado {cantidad_tareas} {palabras[1]}"
+    return f"ok:Se {palabras[0]} eliminado {cantidad_tareas} {palabras[1]}"
 
 
 def cambiar_estado_tarea(
@@ -103,13 +101,13 @@ def cambiar_estado_tarea(
     nuevo_estado = estados[estado - 1]
 
     if tarea["estado"] == nuevo_estado:
-        return "Sin cambios. El estado no se ha modificado."
+        return "info:El estado no ha sido modificado."
 
     repo.cambiar_estado_tarea(tarea["id"], nuevo_estado)
     for t in tareas:
         if t["id"] == tarea["id"]:
             t["estado"] = nuevo_estado
-    return "Tarea modificada correctamente."
+    return "ok:Tarea modificada exitosamente."
 
 
 def exportar_tareas(
@@ -120,7 +118,7 @@ def exportar_tareas(
 ) -> str:
     """Exporta los datos en los formatos especificados."""
     if not extensiones:
-        return "No seleccionó ningún formato."
+        return "error:No seleccionó ningún formato."
 
     ruta_base = f"{Rutas.EXPORTACIONES}/{carpeta}"
 
@@ -149,4 +147,4 @@ def exportar_tareas(
         if abrir_web:
             utils.abrir_navegador(f"{ruta_base}/web/index.html")
 
-    return "Datos exportados correctamente"
+    return "ok:Datos exportados exitosamente."

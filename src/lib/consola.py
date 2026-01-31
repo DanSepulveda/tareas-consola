@@ -26,7 +26,7 @@ tema = Theme(
         "error": "red",
         "input": "blue",
         "alerta": "yellow",
-        "info": "white",
+        "info": "yellow",
     }
 )
 
@@ -179,3 +179,19 @@ def print_tabla(
         tabla.add_row(*fila)
 
     consola.print("\n" * 60, tabla, "")
+
+
+def print_toast(mensaje_toast: str, mensaje_pausa: str = "continuar"):
+    """Imprime un Panel en consola y agrega una pausa."""
+    tipo, mensaje = mensaje_toast.split(":")
+
+    consola.print(
+        "",
+        Panel(
+            mensaje.center(ANCHO - 4),
+            title=tipo.replace("info", "información").upper(),
+            border_style=tipo,
+            width=ANCHO,
+        ),
+    )
+    input_continuar(mensaje_pausa)
