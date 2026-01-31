@@ -12,5 +12,9 @@ dependencies = [
     "rich"
 ]
 
+[tool.setuptools]
+py-modules = ["main"]
+packages = ["src", "src.lib", "src.definiciones"]
+
 [project.scripts]
 tareapp = "main:main"
