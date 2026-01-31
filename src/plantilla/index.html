@@ -104,8 +104,16 @@
         cardSubtitle.innerText = categoria;
 
         const cardDate = document.createElement('span');
-        cardDate.className = 'small d-block text-muted';
-        cardDate.innerText = `📅 ${fecha_creacion} - ${fecha_vencimiento || 'Sin fecha de término'}`;
+        cardDate.className = 'small d-flex justify-content-between text-muted';
+
+        const createdDate = document.createElement('span');
+        createdDate.innerText = `🗓️ Creada: ${fecha_creacion}`;
+
+        const endDate = document.createElement('span');
+        endDate.innerText = `🗓️ Límite: ${fecha_vencimiento || 'Sin fecha'}`;
+
+        cardDate.appendChild(createdDate);
+        cardDate.appendChild(endDate);
 
         const cardBadge = document.createElement('span');
         cardBadge.className = `badge ${obtenerColorBadge(vigencia)}`;
