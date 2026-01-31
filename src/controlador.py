@@ -15,7 +15,7 @@ from src.definiciones.schemas import EstadoGlobal, Extension, Form, Menu
 
 
 def menu_acceso():
-    bienvenida = f"Bienvenido a [green_yellow]{Config.NOMBRE_APP}[/], el programa N°1 para la Administración de Tareas.\n\n"
+    bienvenida = f"Bienvenido a [green_yellow]{Config.NOMBRE_APP}[/], el programa N°1 para la Administración de Tareas.\n\n[red]DEMO->Nombre de usuario: demo, Clave: demo123[/red]\n\n"
 
     menu: Menu = {
         "titulo": Config.NOMBRE_APP,
@@ -55,7 +55,7 @@ def iniciar_sesion():
 
 def crear_cuenta():
     cli.print_exito("Ingrese los siguientes datos para crear una cuenta.")
-    usuario = cli.input_texto("Nombre de usuario", 5, 20).lower()
+    usuario = cli.input_texto("Nombre de usuario", 4, 20).lower()
     nombre = cli.input_texto("Ingrese su nombre", 3)
     clave = cli.input_texto("Ingrese una contraseña", 5, 20)
 

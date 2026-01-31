@@ -1,0 +1,47 @@
+[
+    {
+        "id": "6d47e3f9-b454-40a4-b155-386161bc248f",
+        "id_usuario": "f7e15f5e-dd60-49b3-9b47-396e8ca07a76",
+        "fecha_creacion": "31-01-2026",
+        "fecha_vencimiento": "25-01-2026",
+        "titulo": "Realizar proyecto 1",
+        "categoria": "python, programación",
+        "estado": "En proceso"
+    },
+    {
+        "id": "d1e5e003-adfb-453a-b9d2-0eccd0c96647",
+        "id_usuario": "f7e15f5e-dd60-49b3-9b47-396e8ca07a76",
+        "fecha_creacion": "31-01-2026",
+        "fecha_vencimiento": "05-02-2026",
+        "titulo": "Mantenimiento computador",
+        "categoria": "tecnología",
+        "estado": "Pendiente"
+    },
+    {
+        "id": "22ec467e-d510-4741-af8f-413f5417e908",
+        "id_usuario": "f7e15f5e-dd60-49b3-9b47-396e8ca07a76",
+        "fecha_creacion": "31-01-2026",
+        "fecha_vencimiento": null,
+        "titulo": "Repasar POO",
+        "categoria": "python",
+        "estado": "Pendiente"
+    },
+    {
+        "id": "655a4448-cb22-4066-8292-5cec3937f8d8",
+        "id_usuario": "f7e15f5e-dd60-49b3-9b47-396e8ca07a76",
+        "fecha_creacion": "31-01-2026",
+        "fecha_vencimiento": "02-02-2026",
+        "titulo": "Entrega de proyecto",
+        "categoria": "python, programación",
+        "estado": "En proceso"
+    },
+    {
+        "id": "709b96de-6f24-46ae-8d4c-90ac2629ac85",
+        "id_usuario": "f7e15f5e-dd60-49b3-9b47-396e8ca07a76",
+        "fecha_creacion": "31-01-2026",
+        "fecha_vencimiento": "15-01-2026",
+        "titulo": "Realizar proyecto HTML",
+        "categoria": "front-end",
+        "estado": "Finalizada"
+    }
+]
