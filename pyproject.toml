@@ -16,5 +16,8 @@ dependencies = [
 py-modules = ["main"]
 packages = ["src", "src.lib", "src.definiciones"]
 
+[tool.setuptools.package-data]
+"src.plantilla" = ["*"]
+
 [project.scripts]
 tareapp = "main:main"
